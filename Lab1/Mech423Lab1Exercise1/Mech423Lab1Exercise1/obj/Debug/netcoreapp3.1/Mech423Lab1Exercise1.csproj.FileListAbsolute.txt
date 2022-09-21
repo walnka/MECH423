@@ -1,0 +1,16 @@
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.exe
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.deps.json
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.runtimeconfig.json
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.runtimeconfig.dev.json
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.dll
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\bin\Debug\netcoreapp3.1\Mech423Lab1Exercise1.pdb
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.csproj.AssemblyReference.cache
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.csproj.GenerateResource.cache
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.AssemblyInfoInputs.cache
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.AssemblyInfo.cs
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.csproj.CoreCompileInputs.cache
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.dll
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.pdb
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.genruntimeconfig.cache
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise1\Mech423Lab1Exercise1\obj\Debug\netcoreapp3.1\Mech423Lab1Exercise1.MouseSensor.resources

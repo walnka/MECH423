@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "Mech423Lab1Exercise1/1.0.0": {
+        "runtime": {
+          "Mech423Lab1Exercise1.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Mech423Lab1Exercise1/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
