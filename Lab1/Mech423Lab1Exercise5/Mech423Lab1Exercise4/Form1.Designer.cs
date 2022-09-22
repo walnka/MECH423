@@ -73,6 +73,7 @@ namespace Mech423Lab1Exercise4
             this.label17 = new System.Windows.Forms.Label();
             this.gestureNameOutput = new System.Windows.Forms.TextBox();
             this.defineGestureButton = new System.Windows.Forms.Button();
+            this.detectNewBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // comboBoxCOMPorts
@@ -417,14 +418,15 @@ namespace Mech423Lab1Exercise4
             // 
             // gestureNameOutput
             // 
-            this.gestureNameOutput.Location = new System.Drawing.Point(399, 100);
+            this.gestureNameOutput.Location = new System.Drawing.Point(336, 100);
             this.gestureNameOutput.Name = "gestureNameOutput";
-            this.gestureNameOutput.Size = new System.Drawing.Size(161, 22);
+            this.gestureNameOutput.Size = new System.Drawing.Size(294, 22);
             this.gestureNameOutput.TabIndex = 37;
+            this.gestureNameOutput.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // defineGestureButton
             // 
-            this.defineGestureButton.Location = new System.Drawing.Point(413, 145);
+            this.defineGestureButton.Location = new System.Drawing.Point(462, 144);
             this.defineGestureButton.Name = "defineGestureButton";
             this.defineGestureButton.Size = new System.Drawing.Size(127, 23);
             this.defineGestureButton.TabIndex = 38;
@@ -432,11 +434,22 @@ namespace Mech423Lab1Exercise4
             this.defineGestureButton.UseVisualStyleBackColor = true;
             this.defineGestureButton.Click += new System.EventHandler(this.defineGestureButton_Click);
             // 
+            // detectNewBox
+            // 
+            this.detectNewBox.AutoSize = true;
+            this.detectNewBox.Location = new System.Drawing.Point(343, 146);
+            this.detectNewBox.Name = "detectNewBox";
+            this.detectNewBox.Size = new System.Drawing.Size(102, 21);
+            this.detectNewBox.TabIndex = 39;
+            this.detectNewBox.Text = "Detect New";
+            this.detectNewBox.UseVisualStyleBackColor = true;
+            // 
             // SerialDemo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(650, 554);
+            this.Controls.Add(this.detectNewBox);
             this.Controls.Add(this.defineGestureButton);
             this.Controls.Add(this.gestureNameOutput);
             this.Controls.Add(this.label17);
@@ -528,6 +541,7 @@ namespace Mech423Lab1Exercise4
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.TextBox gestureNameOutput;
         private System.Windows.Forms.Button defineGestureButton;
+        private System.Windows.Forms.CheckBox detectNewBox;
     }
 }
 

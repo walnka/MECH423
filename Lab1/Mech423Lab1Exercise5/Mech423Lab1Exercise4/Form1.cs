@@ -27,7 +27,7 @@ namespace Mech423Lab1Exercise4
         StreamWriter outputFile;
 
         //Gesture Variables
-        int posMotionX = 210;
+        int posMotionX = 200;
         int negMotionX = 70;
         int posMotionY = 170;
         int negMotionY = 50;
@@ -172,34 +172,54 @@ namespace Mech423Lab1Exercise4
 
                     // Checks most recent addition to queue for gestures
                     // Check for motions for gestures
-                    bool motionRecorded = true;
+                    bool motionRecorded = false;
                     if (Convert.ToInt32(axOutput.Text) >= posMotionX && gestureState != "+X" && gestureState != "-X")
                     {
-                        gestureState = "+X";
+                        if (detectNewBox.Checked || existingGesture("+X"))
+                        {
+                            gestureState = "+X";
+                            motionRecorded = true;
+                        }
                     }
                     else if (Convert.ToInt32(axOutput.Text) <= negMotionX && gestureState != "-X" && gestureState != "+X")
                     {
-                        gestureState = "-X";
+                        if (detectNewBox.Checked || existingGesture("-X"))
+                        {
+                            gestureState = "-X";
+                            motionRecorded = true;
+                        }
                     }
                     else if (Convert.ToInt32(ayOutput.Text) >= posMotionY && gestureState != "+Y" && gestureState != "-Y")
                     {
-                        gestureState = "+Y";
+                        if (detectNewBox.Checked || existingGesture("+Y"))
+                        {
+                            gestureState = "+Y";
+                            motionRecorded = true;
+                        }
                     }
                     else if (Convert.ToInt32(ayOutput.Text) <= negMotionY && gestureState != "-Y" && gestureState != "+Y")
                     {
-                        gestureState = "-Y";
+                        if (detectNewBox.Checked || existingGesture("-Y"))
+                        {
+                            gestureState = "-Y";
+                            motionRecorded = true;
+                        }
                     }
                     else if (Convert.ToInt32(azOutput.Text) >= posMotionZ && gestureState != "+Z" && gestureState != "-Z")
                     {
-                        gestureState = "+Z";
+                        if (detectNewBox.Checked || existingGesture("+Z"))
+                        {
+                            gestureState = "+Z";
+                            motionRecorded = true;
+                        }
                     }
                     else if (Convert.ToInt32(azOutput.Text) <= negMotionZ && gestureState != "-Z" && gestureState != "+Z")
                     {
-                        gestureState = "-Z";
-                    }
-                    else
-                    {
-                        motionRecorded = false;
+                        if (detectNewBox.Checked || existingGesture("-Z"))
+                        {
+                            gestureState = "-Z";
+                            motionRecorded = true;
+                        }
                     }
 
                     if (motionRecorded && gestureMotionCounter < gestureMotionCap)
@@ -210,7 +230,6 @@ namespace Mech423Lab1Exercise4
                     }
                 }
             }
-
 
             // Deduce Orientation from Acceleration
             int[] accelerationArray = { Convert.ToInt32(axOutput.Text), Convert.ToInt32(ayOutput.Text), Convert.ToInt32(azOutput.Text)};
@@ -333,6 +352,17 @@ namespace Mech423Lab1Exercise4
             string[] local_gestureHistory = new string[5];
             gestureHistory.CopyTo(local_gestureHistory, 0);
             gestureNames.Add(local_gestureHistory, gestureNameOutput.Text);
+        }
+        private bool existingGesture(string nextState)
+        {
+            foreach (KeyValuePair<string[], string> kvp in gestureNames)
+            {
+                if ( nextState == kvp.Key[gestureMotionCounter] && (gestureMotionCounter == 0 || gestureState == kvp.Key[gestureMotionCounter - 1]))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
