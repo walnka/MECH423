@@ -93,6 +93,7 @@ namespace Mech423Lab1Exercise1
             // 
             // MouseZone
             // 
+            this.MouseZone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.MouseZone.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.MouseZone.Location = new System.Drawing.Point(133, 0);
             this.MouseZone.Name = "MouseZone";
