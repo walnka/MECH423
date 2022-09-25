@@ -43,12 +43,12 @@ namespace Mech423Lab1Exercise4
 
 
         //Accelerometer Values
-        public int posMotionX = 170; //170
-        public int negMotionX = 80; //60
-        public int posMotionY = 160;
-        public int negMotionY = 70;
-        public int posMotionZ = 160;
-        public int negMotionZ = 70;
+        public int posMotionX = 200; //170
+        public int negMotionX = 60; //60
+        public int posMotionY = 200;
+        public int negMotionY = 60;
+        public int posMotionZ = 200;
+        public int negMotionZ = 60;
 
         public LightCycles()
         {
@@ -90,8 +90,8 @@ namespace Mech423Lab1Exercise4
                 }
             }
             velocityTimer.Start();
-            p1AccelState = "0";
-            p2AccelState = "0";
+            p1AccelState = inputSelection.p1DownADir;
+            p2AccelState = inputSelection.p2UpADir;
         }
 
         private void velocityTimer_Tick(object sender, EventArgs e)
