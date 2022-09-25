@@ -43,12 +43,12 @@ namespace Mech423Lab1Exercise4
 
 
         //Accelerometer Values
-        public int posMotionX = 200; //170
-        public int negMotionX = 60; //60
-        public int posMotionY = 200;
-        public int negMotionY = 60;
-        public int posMotionZ = 200;
-        public int negMotionZ = 60;
+        public int posMotionX = 180; //170
+        public int negMotionX = 70; //60
+        public int posMotionY = 180;
+        public int negMotionY = 70;
+        public int posMotionZ = 180;
+        public int negMotionZ = 70;
 
         public LightCycles()
         {
@@ -109,6 +109,54 @@ namespace Mech423Lab1Exercise4
             }
             background.Image = field;
 
+            if (p1AccelStateChange)
+            {
+                p1AccelStateChange = false;
+                if (inputSelection.p1UpADir == p1AccelState)
+                {
+                    player1Direction[0] = 0;
+                    player1Direction[1] = -playerSize;
+                }
+                else if (inputSelection.p1DownADir == p1AccelState)
+                {
+                    player1Direction[0] = 0;
+                    player1Direction[1] = playerSize;
+                }
+                else if (inputSelection.p1LeftADir == p1AccelState)
+                {
+                    player1Direction[0] = -playerSize;
+                    player1Direction[1] = 0;
+                }
+                else if (inputSelection.p1RightADir == p1AccelState)
+                {
+                    player1Direction[0] = playerSize;
+                    player1Direction[1] = 0;
+                }
+            }
+            if (p2AccelStateChange)
+            {
+                p2AccelStateChange = false;
+                if (inputSelection.p2UpADir == p2AccelState)
+                {
+                    player2Direction[0] = 0;
+                    player2Direction[1] = -playerSize;
+                }
+                else if (inputSelection.p2DownADir == p2AccelState)
+                {
+                    player2Direction[0] = 0;
+                    player2Direction[1] = playerSize;
+                }
+                else if (inputSelection.p2LeftADir == p2AccelState)
+                {
+                    player2Direction[0] = -playerSize;
+                    player2Direction[1] = 0;
+                }
+                else if (inputSelection.p2RightADir == p2AccelState)
+                {
+                    player2Direction[0] = playerSize;
+                    player2Direction[1] = 0;
+                }
+            }
             //Move Players
             player1Top += player1Direction[1];
             player1Left += player1Direction[0];
@@ -316,30 +364,6 @@ namespace Mech423Lab1Exercise4
                         }
                     }
                 }
-                if (p1AccelStateChange)
-                {
-                    p1AccelStateChange = false;
-                    if (inputSelection.p1UpADir == p1AccelState)
-                    {
-                        player1Direction[0] = 0;
-                        player1Direction[1] = -playerSize;
-                    }
-                    else if (inputSelection.p1DownADir == p1AccelState)
-                    {
-                        player1Direction[0] = 0;
-                        player1Direction[1] = playerSize;
-                    }
-                    else if (inputSelection.p1LeftADir == p1AccelState)
-                    {
-                        player1Direction[0] = -playerSize;
-                        player1Direction[1] = 0;
-                    }
-                    else if (inputSelection.p1RightADir == p1AccelState)
-                    {
-                        player1Direction[0] = playerSize;
-                        player1Direction[1] = 0;
-                    }
-                }
             }
         }
 
@@ -433,30 +457,6 @@ namespace Mech423Lab1Exercise4
                             p2AccelState = stateName;
                             p2AccelStateChange = true;
                         }
-                    }
-                }
-                if (p2AccelStateChange)
-                {
-                    p2AccelStateChange = false;
-                    if (inputSelection.p2UpADir == p2AccelState)
-                    {
-                        player2Direction[0] = 0;
-                        player2Direction[1] = -playerSize;
-                    }
-                    else if (inputSelection.p2DownADir == p2AccelState)
-                    {
-                        player2Direction[0] = 0;
-                        player2Direction[1] = playerSize;
-                    }
-                    else if (inputSelection.p2LeftADir == p2AccelState)
-                    {
-                        player2Direction[0] = -playerSize;
-                        player2Direction[1] = 0;
-                    }
-                    else if (inputSelection.p2RightADir == p2AccelState)
-                    {
-                        player2Direction[0] = playerSize;
-                        player2Direction[1] = 0;
                     }
                 }
             }
