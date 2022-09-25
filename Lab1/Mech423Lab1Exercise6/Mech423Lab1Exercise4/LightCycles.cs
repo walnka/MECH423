@@ -43,12 +43,12 @@ namespace Mech423Lab1Exercise4
 
 
         //Accelerometer Values
-        public int posMotionX = 180; //170
-        public int negMotionX = 70; //60
-        public int posMotionY = 180;
-        public int negMotionY = 70;
-        public int posMotionZ = 180;
-        public int negMotionZ = 70;
+        public int posMotionX = 190; //170
+        public int negMotionX = 60; //60
+        public int posMotionY = 190;
+        public int negMotionY = 60;
+        public int posMotionZ = 190;
+        public int negMotionZ = 60;
 
         public LightCycles()
         {
@@ -166,7 +166,14 @@ namespace Mech423Lab1Exercise4
             if (loser != 0)
             {
                 velocityTimer.Stop();
-                MessageBox.Show("Player " + loser + " lost!");
+                if (loser == 3)
+                {
+                    MessageBox.Show("Your Art is Complete!");
+                }
+                else
+                {
+                    MessageBox.Show("Player " + loser + " lost!");
+                }
                 DialogResult result = MessageBox.Show("Retry or Cancel the game?", "Try Again?", MessageBoxButtons.RetryCancel);
                 if (result == DialogResult.Retry)
                 {
@@ -181,13 +188,27 @@ namespace Mech423Lab1Exercise4
 
         private int checkForCollision()
         {
-            if ((player1Direction[0] == playerSize && field.GetPixel(player1Left + playerSize - 1 + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[0] == -playerSize && field.GetPixel(player1Left + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == playerSize && field.GetPixel(player1Left, player1Top + playerSize - 1 + player1Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == -playerSize && field.GetPixel(player1Left, player1Top + player1Direction[1]).ToArgb() != Color.Black.ToArgb()))
+            if (inputSelection.drawingModeCheck.Checked)
             {
-                return 1;
+                if ((player1Direction[0] == playerSize && field.GetPixel(player1Left + playerSize - 1 + player1Direction[0], player1Top).ToArgb() == Color.White.ToArgb()) || (player1Direction[0] == -playerSize && field.GetPixel(player1Left + player1Direction[0], player1Top).ToArgb() == Color.White.ToArgb()) || (player1Direction[1] == playerSize && field.GetPixel(player1Left, player1Top + playerSize - 1 + player1Direction[1]).ToArgb() == Color.White.ToArgb()) || (player1Direction[1] == -playerSize && field.GetPixel(player1Left, player1Top + player1Direction[1]).ToArgb() == Color.White.ToArgb()))
+                {
+                    return 3;
+                }
+                if ((player2Direction[0] == playerSize && field.GetPixel(player2Left + playerSize - 1 + player2Direction[0], player2Top).ToArgb() == Color.White.ToArgb()) || (player2Direction[0] == -playerSize && field.GetPixel(player2Left + player2Direction[0], player2Top).ToArgb() == Color.White.ToArgb()) || (player2Direction[1] == playerSize && field.GetPixel(player2Left, player2Top + playerSize - 1 + player2Direction[1]).ToArgb() == Color.White.ToArgb()) || (player2Direction[1] == -playerSize && field.GetPixel(player2Left, player2Top + player2Direction[1]).ToArgb() == Color.White.ToArgb()))
+                {
+                    return 3;
+                }
             }
-            else if ((player2Direction[0] == playerSize && field.GetPixel(player2Left + playerSize - 1 + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[0] == -playerSize && field.GetPixel(player2Left + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == playerSize && field.GetPixel(player2Left, player2Top + playerSize - 1 + player2Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == -playerSize && field.GetPixel(player2Left, player2Top + player2Direction[1]).ToArgb() != Color.Black.ToArgb()))
+            else
             {
-                return 2;
+                if ((player1Direction[0] == playerSize && field.GetPixel(player1Left + playerSize - 1 + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[0] == -playerSize && field.GetPixel(player1Left + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == playerSize && field.GetPixel(player1Left, player1Top + playerSize - 1 + player1Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == -playerSize && field.GetPixel(player1Left, player1Top + player1Direction[1]).ToArgb() != Color.Black.ToArgb()))
+                {
+                    return 1;
+                }
+                else if ((player2Direction[0] == playerSize && field.GetPixel(player2Left + playerSize - 1 + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[0] == -playerSize && field.GetPixel(player2Left + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == playerSize && field.GetPixel(player2Left, player2Top + playerSize - 1 + player2Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == -playerSize && field.GetPixel(player2Left, player2Top + player2Direction[1]).ToArgb() != Color.Black.ToArgb()))
+                {
+                    return 2;
+                }
             }
             return 0;
         }
@@ -291,7 +312,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p1AxQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionX && p1AccelState != "+X" && p1AccelState != "-X")
+                    if (nextByte > posMotionX && p1AccelState != "+X" && p1AccelState != "-X" && !p1AccelStateChange)
                     {
                         string stateName = "+X";
                         if( !inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -300,7 +321,7 @@ namespace Mech423Lab1Exercise4
                             p1AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionX && p1AccelState != "+X" && p1AccelState != "-X")
+                    else if (nextByte < negMotionX && p1AccelState != "+X" && p1AccelState != "-X" && !p1AccelStateChange)
                     {
                         string stateName = "-X";
                         if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -318,7 +339,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p1AyQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
+                    if (nextByte > posMotionY && p1AccelState != "+Y" && p1AccelState != "-Y" && !p1AccelStateChange)
                     {
                         string stateName = "+Y";
                         if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -327,7 +348,7 @@ namespace Mech423Lab1Exercise4
                             p1AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
+                    else if (nextByte < negMotionY && p1AccelState != "+Y" && p1AccelState != "-Y" && !p1AccelStateChange)
                     {
                         string stateName = "-Y";
                         if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -345,7 +366,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p1AzQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
+                    if (nextByte > posMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z" && !p1AccelStateChange)
                     {
                         string stateName = "+Z";
                         if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -354,7 +375,7 @@ namespace Mech423Lab1Exercise4
                             p1AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
+                    else if (nextByte < negMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z" && !p1AccelStateChange)
                     {
                         string stateName = "-Z";
                         if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
@@ -386,7 +407,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p2AxQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionX && p2AccelState != "+X" && p2AccelState != "-X")
+                    if (nextByte > posMotionX && p2AccelState != "+X" && p2AccelState != "-X" && !p2AccelStateChange)
                     {
                         string stateName = "+X";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
@@ -395,7 +416,7 @@ namespace Mech423Lab1Exercise4
                             p2AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionX && p2AccelState != "+X" && p2AccelState != "-X")
+                    else if (nextByte < negMotionX && p2AccelState != "+X" && p2AccelState != "-X" && !p2AccelStateChange)
                     {
                         string stateName = "-X";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
@@ -413,7 +434,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p2AyQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
+                    if (nextByte > posMotionY && p2AccelState != "+Y" && p2AccelState != "-Y" && !p2AccelStateChange)
                     {
                         string stateName = "+Y";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
@@ -422,7 +443,7 @@ namespace Mech423Lab1Exercise4
                             p2AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
+                    else if (nextByte < negMotionY && p2AccelState != "+Y" && p2AccelState != "-Y" && !p2AccelStateChange)
                     {
                         string stateName = "-Y";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
@@ -440,7 +461,7 @@ namespace Mech423Lab1Exercise4
                     {
                         p2AzQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
+                    if (nextByte > posMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z" && !p2AccelStateChange)
                     {
                         string stateName = "+Z";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
@@ -449,7 +470,7 @@ namespace Mech423Lab1Exercise4
                             p2AccelStateChange = true;
                         }
                     }
-                    else if (nextByte < negMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
+                    else if (nextByte < negMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z" && !p2AccelStateChange)
                     {
                         string stateName = "-Z";
                         if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)

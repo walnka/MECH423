@@ -57,6 +57,7 @@ namespace Mech423Lab1Exercise4
             this.p2Ready = new System.Windows.Forms.CheckBox();
             this.p1ConnectCheck = new System.Windows.Forms.CheckBox();
             this.p2ConnectCheck = new System.Windows.Forms.CheckBox();
+            this.drawingModeCheck = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -366,12 +367,23 @@ namespace Mech423Lab1Exercise4
             this.p2ConnectCheck.UseVisualStyleBackColor = true;
             this.p2ConnectCheck.CheckedChanged += new System.EventHandler(this.p2ConnectCheck_CheckedChanged);
             // 
+            // drawingModeCheck
+            // 
+            this.drawingModeCheck.AutoSize = true;
+            this.drawingModeCheck.Location = new System.Drawing.Point(203, 339);
+            this.drawingModeCheck.Name = "drawingModeCheck";
+            this.drawingModeCheck.Size = new System.Drawing.Size(120, 21);
+            this.drawingModeCheck.TabIndex = 27;
+            this.drawingModeCheck.Text = "Drawing Mode";
+            this.drawingModeCheck.UseVisualStyleBackColor = true;
+            // 
             // InputSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(546, 372);
+            this.Controls.Add(this.drawingModeCheck);
             this.Controls.Add(this.p2ConnectCheck);
             this.Controls.Add(this.p1ConnectCheck);
             this.Controls.Add(this.p2Ready);
@@ -434,5 +446,6 @@ namespace Mech423Lab1Exercise4
         private System.Windows.Forms.CheckBox p2ConnectCheck;
         public System.Windows.Forms.CheckBox p1Ready;
         public System.Windows.Forms.CheckBox p2Ready;
+        public System.Windows.Forms.CheckBox drawingModeCheck;
     }
 }
