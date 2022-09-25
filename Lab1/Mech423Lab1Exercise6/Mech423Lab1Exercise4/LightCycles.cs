@@ -7,33 +7,74 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Collections.Concurrent;
+
 
 namespace Mech423Lab1Exercise4
 {
     public partial class LightCycles : Form
     {
-        int[] player1Direction = { 0, 1 }; // X Direction, Y Direcion
-        int[] player2Direction = { 0, -1 }; //X Direction, Y Direction
+        static int playerSize = 5;
+        int[] player1Direction = new int[2]; // X Direction, Y Direction
+        int[] player2Direction = new int[2]; // X Direction, Y Direction
         Bitmap field = new Bitmap(@"C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\field.bmp", true);
         Color p1Color = Color.Yellow;
         Color p2Color = Color.Blue;
+        int player1Left, player1Top, player2Left, player2Top;
+        InputSelection inputSelection = new InputSelection();
+
+        //Serial Interface
+        public ConcurrentQueue<Int32> p1SerialQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p2SerialQueue = new ConcurrentQueue<Int32>();
+        public string p1State = "null";
+        public string p2State = "null";
+        public string p1AccelState = "0";
+        public bool p1AccelStateChange = false;
+        public string p2AccelState = "0";
+        public bool p2AccelStateChange = false;
+        public ConcurrentQueue<Int32> p1AxQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p1AyQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p1AzQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p2AxQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p2AyQueue = new ConcurrentQueue<Int32>();
+        public ConcurrentQueue<Int32> p2AzQueue = new ConcurrentQueue<Int32>();
+
+        //Accelerometer Values
+        public int posMotionX = 200;
+        public int negMotionX = 70;
+        public int posMotionY = 170;
+        public int negMotionY = 50;
+        public int posMotionZ = 170;
+        public int negMotionZ = 60;
 
         public LightCycles()
         {
             InitializeComponent();
-            background.Width = 500;
-            background.Height = 500;
+            inputSelection.TheParent = this;
+            inputSelection.ShowDialog();
+            velocityTimer.Interval = 40;
+            background.Left = 0;
+            background.Top = 0;
+            background.Margin = Padding.Empty;
             background.Image = field;
-            player1.Left = 20;
-            player1.Top = field.Height / 2;
-            player2.Left = field.Width - 30;
-            player2.Top = field.Height / 2 - 10;
+            startGame();
+        }
+        private void startGame()
+        {
+            player1Left = 20;
+            player1Top = field.Height / 2;
+            player2Left = field.Width - 20 - playerSize;
+            player2Top = field.Height / 2 - playerSize;
+            player1Direction[0] = 0;
+            player1Direction[1] = playerSize;
+            player2Direction[0] = 0;
+            player2Direction[1] = -playerSize;
 
             for (int i = 0; i < field.Width; i++)
             {
                 for (int j = 0; j < field.Height; j++)
                 {
-                    if (i == 0 || i == field.Width - 1|| j == 0 || j == field.Height - 1)
+                    if (i <= playerSize || i >= field.Width - playerSize - 2 || j <= playerSize || j >= field.Height - playerSize - 2)
                     {
                         field.SetPixel(i, j, Color.White);
                     }
@@ -44,7 +85,6 @@ namespace Mech423Lab1Exercise4
                 }
             }
             velocityTimer.Start();
-
         }
 
         private void velocityTimer_Tick(object sender, EventArgs e)
@@ -52,36 +92,45 @@ namespace Mech423Lab1Exercise4
             int loser = checkForCollision();
 
             //Draw Previous Player Spot
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < playerSize; i++)
             {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < playerSize; j++)
                 {
-                    field.SetPixel(player1.Left + j, player1.Top + i, p1Color);
-                    field.SetPixel(player2.Left + j, player2.Top + i, p2Color);
+                    field.SetPixel(player1Left + j, player1Top + i, p1Color);
+                    field.SetPixel(player2Left + j, player2Top + i, p2Color);
                 }
             }
             background.Image = field;
 
             //Move Players
-            player1.Top += player1Direction[1];
-            player1.Left += player1Direction[0];
-            player2.Top += player2Direction[1];
-            player2.Left += player2Direction[0];
+            player1Top += player1Direction[1];
+            player1Left += player1Direction[0];
+            player2Top += player2Direction[1];
+            player2Left += player2Direction[0];
 
             if (loser != 0)
             {
                 velocityTimer.Stop();
                 MessageBox.Show("Player " + loser + " lost!");
+                DialogResult result = MessageBox.Show("Retry or Cancel the game?", "Try Again?", MessageBoxButtons.RetryCancel);
+                if (result == DialogResult.Retry)
+                {
+                    startGame();
+                }
+                else
+                {
+                    Close();
+                }
             }
         }
 
         private int checkForCollision()
         {
-            if ((player1Direction[0] == 1 && field.GetPixel(player1.Right + 1, player1.Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[0] == -1 && field.GetPixel(player1.Left - 1, player1.Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == 1 && field.GetPixel(player1.Left, player1.Bottom + 1).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == -1 && field.GetPixel(player1.Left, player1.Top - 1).ToArgb() != Color.Black.ToArgb()))
+            if ((player1Direction[0] == playerSize && field.GetPixel(player1Left + playerSize - 1 + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[0] == -playerSize && field.GetPixel(player1Left + player1Direction[0], player1Top).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == playerSize && field.GetPixel(player1Left, player1Top + playerSize - 1 + player1Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player1Direction[1] == -playerSize && field.GetPixel(player1Left, player1Top + player1Direction[1]).ToArgb() != Color.Black.ToArgb()))
             {
                 return 1;
             }
-            else if ((player2Direction[0] == 1 && field.GetPixel(player2.Right + 1, player2.Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[0] == -1 && field.GetPixel(player2.Left - 1, player2.Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == 1 && field.GetPixel(player2.Left, player2.Bottom + 1).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == -1 && field.GetPixel(player2.Left, player2.Top - 1).ToArgb() != Color.Black.ToArgb()))
+            else if ((player2Direction[0] == playerSize && field.GetPixel(player2Left + playerSize - 1 + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[0] == -playerSize && field.GetPixel(player2Left + player2Direction[0], player2Top).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == playerSize && field.GetPixel(player2Left, player2Top + playerSize - 1 + player2Direction[1]).ToArgb() != Color.Black.ToArgb()) || (player2Direction[1] == -playerSize && field.GetPixel(player2Left, player2Top + player2Direction[1]).ToArgb() != Color.Black.ToArgb()))
             {
                 return 2;
             }
@@ -90,48 +139,277 @@ namespace Mech423Lab1Exercise4
 
         private void LightCycles_KeyDown(object sender, KeyEventArgs e)
         {
-            //Player 1 Keyboard Response
-            if (e.KeyCode == Keys.A && player1Direction[0] == 0)
+            if (inputSelection.player1InputKeyboard)
             {
-                player1Direction[0] = -1;
-                player1Direction[1] = 0;
+                //Player 1 Keyboard Response
+                if (e.KeyCode == inputSelection.p1LeftKey && player1Direction[0] == 0)
+                {
+                    player1Direction[0] = -playerSize;
+                    player1Direction[1] = 0;
+                }
+                if (e.KeyCode == inputSelection.p1UpKey && player1Direction[1] == 0)
+                {
+                    player1Direction[0] = 0;
+                    player1Direction[1] = -playerSize;
+                }
+                if (e.KeyCode == inputSelection.p1DownKey && player1Direction[1] == 0)
+                {
+                    player1Direction[0] = 0;
+                    player1Direction[1] = playerSize;
+                }
+                if (e.KeyCode == inputSelection.p1RightKey && player1Direction[0] == 0)
+                {
+                    player1Direction[0] = playerSize;
+                    player1Direction[1] = 0;
+                }
             }
-            if (e.KeyCode == Keys.W && player1Direction[1] == 0)
-            {
-                player1Direction[0] = 0;
-                player1Direction[1] = -1;
-            }
-            if (e.KeyCode == Keys.S && player1Direction[1] == 0)
-            {
-                player1Direction[0] = 0;
-                player1Direction[1] = 1;
-            }
-            if (e.KeyCode == Keys.D && player1Direction[0] == 0)
-            {
-                player1Direction[0] = 1;
-                player1Direction[1] = 0;
-            }
-
             //Player 2 Keyboard Response
-            if (e.KeyCode == Keys.J && player2Direction[0] == 0)
+            if (inputSelection.player2InputKeyboard)
             {
-                player2Direction[0] = -1;
-                player2Direction[1] = 0;
+                if (e.KeyCode == inputSelection.p2LeftKey && player2Direction[0] == 0)
+                {
+                    player2Direction[0] = -playerSize;
+                    player2Direction[1] = 0;
+                }
+                if (e.KeyCode == inputSelection.p2UpKey && player2Direction[1] == 0)
+                {
+                    player2Direction[0] = 0;
+                    player2Direction[1] = -playerSize;
+                }
+                if (e.KeyCode == inputSelection.p2DownKey && player2Direction[1] == 0)
+                {
+                    player2Direction[0] = 0;
+                    player2Direction[1] = playerSize;
+                }
+                if (e.KeyCode == inputSelection.p2RightKey && player2Direction[0] == 0)
+                {
+                    player2Direction[0] = playerSize;
+                    player2Direction[1] = 0;
+                }
             }
-            if (e.KeyCode == Keys.I && player2Direction[1] == 0)
+        }
+
+        //Serial Port Stuff
+        private void p1Serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            int newByte = 0;
+            int bytesToRead;
+
+            bytesToRead = p1Serial.BytesToRead;
+            while (bytesToRead != 0)
             {
-                player2Direction[0] = 0;
-                player2Direction[1] = -1;
+                newByte = p1Serial.ReadByte();
+                p1SerialQueue.Enqueue(newByte);
+                bytesToRead = p1Serial.BytesToRead;
             }
-            if (e.KeyCode == Keys.K && player2Direction[1] == 0)
+        }
+
+        private void p2Serial_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        {
+            int newByte = 0;
+            int bytesToRead;
+
+            bytesToRead = p2Serial.BytesToRead;
+            while (bytesToRead != 0)
             {
-                player2Direction[0] = 0;
-                player2Direction[1] = 1;
+                newByte = p2Serial.ReadByte();
+                p2SerialQueue.Enqueue(newByte);
+                bytesToRead = p2Serial.BytesToRead;
             }
-            if (e.KeyCode == Keys.L && player2Direction[0] == 0)
+        }
+
+        private void p1RefreshTimer_tick(object sender, EventArgs e)
+        {
+            // Check next byte axis
+            int nextByte;
+            while (p1SerialQueue.TryDequeue(out nextByte))
             {
-                player2Direction[0] = 1;
-                player2Direction[1] = 0;
+                if (nextByte == 255 && p1State == "null")
+                {
+                    p1State = "Ax";
+                }
+                else if (p1State == "Ax")
+                {
+                    p1State = "Ay";
+                    p1AxQueue.Enqueue(nextByte);
+                    if (p1AxQueue.Count > 40)
+                    {
+                        p1AxQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionX && p1AccelState != "+X"&& p1AccelState != "-X")
+                    {
+                        p1AccelState = "+X";
+                        p1AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionX && p1AccelState != "+X" && p1AccelState != "-X")
+                    {
+                        p1AccelState = "-X";
+                        p1AccelStateChange = true;
+                    }
+                }
+                else if (p1State == "Ay")
+                {
+                    p1State = "Az";
+                    p1AyQueue.Enqueue(nextByte);
+                    if (p1AyQueue.Count > 40)
+                    {
+                        p1AyQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
+                    {
+                        p1AccelState = "+Y"; 
+                        p1AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
+                    {
+                        p1AccelState = "-Y";
+                        p1AccelStateChange = true;
+                    }
+                }
+                else if (p1State == "Az")
+                {
+                    p1State = "null";
+                    p1AzQueue.Enqueue(nextByte);
+                    if (p1AzQueue.Count > 40)
+                    {
+                        p1AzQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
+                    {
+                        p1AccelState = "+Z";
+                        p1AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
+                    {
+                        p1AccelState = "-Z";
+                        p1AccelStateChange = true;
+                    }
+                }
+                if (p1AccelStateChange)
+                {
+                    p1AccelStateChange = false;
+                    if (inputSelection.p1UpADir == p1AccelState)
+                    {
+                        player1Direction[0] = 0;
+                        player1Direction[1] = -playerSize;
+                    }
+                    else if (inputSelection.p1DownADir == p1AccelState)
+                    {
+                        player1Direction[0] = 0;
+                        player1Direction[1] = playerSize;
+                    }
+                    else if (inputSelection.p1LeftADir == p1AccelState)
+                    {
+                        player1Direction[0] = -playerSize;
+                        player1Direction[1] = 0;
+                    }
+                    else if (inputSelection.p1RightADir == p1AccelState)
+                    {
+                        player1Direction[0] = playerSize;
+                        player1Direction[1] = 0;
+                    }
+                }
+            }
+        }
+
+        private void FatherInputTimer_Tick(object sender, EventArgs e)
+        {
+            bool waitingforinput = false;
+
+        }
+
+        private void p2RefreshTimer_tick(object sender, EventArgs e)
+        {
+
+            // Check next byte axis
+            int nextByte;
+            while (p2SerialQueue.TryDequeue(out nextByte))
+            {
+                if (nextByte == 255 && p2State == "null")
+                {
+                    p2State = "Ax";
+                }
+                else if (p2State == "Ax")
+                {
+                    p2State = "Ay";
+                    p2AxQueue.Enqueue(nextByte);
+                    if (p2AxQueue.Count > 40)
+                    {
+                        p2AxQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionX && p2AccelState != "+X" && p2AccelState != "-X")
+                    {
+                        p2AccelState = "+X";
+                        p2AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionX && p2AccelState != "+X" && p2AccelState != "-X")
+                    {
+                        p2AccelState = "-X";
+                        p2AccelStateChange = true;
+                    }
+                }
+                else if (p2State == "Ay")
+                {
+                    p2State = "Az";
+                    p2AyQueue.Enqueue(nextByte);
+                    if (p2AyQueue.Count > 40)
+                    {
+                        p2AyQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
+                    {
+                        p2AccelState = "+Y";
+                        p2AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
+                    {
+                        p2AccelState = "-Y";
+                        p2AccelStateChange = true;
+                    }
+                }
+                else if (p2State == "Az")
+                {
+                    p2State = "null";
+                    p2AzQueue.Enqueue(nextByte);
+                    if (p2AzQueue.Count > 40)
+                    {
+                        p2AzQueue.TryDequeue(out int trash);
+                    }
+                    if (nextByte > posMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
+                    {
+                        p2AccelState = "+Z";
+                        p2AccelStateChange = true;
+                    }
+                    else if (nextByte < negMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
+                    {
+                        p2AccelState = "-Z";
+                        p2AccelStateChange = true;
+                    }
+                }
+                if (p2AccelStateChange)
+                {
+                    p2AccelStateChange = false;
+                    if (inputSelection.p2UpADir == p2AccelState)
+                    {
+                        player2Direction[0] = 0;
+                        player2Direction[1] = -playerSize;
+                    }
+                    else if (inputSelection.p2DownADir == p2AccelState)
+                    {
+                        player2Direction[0] = 0;
+                        player2Direction[1] = playerSize;
+                    }
+                    else if (inputSelection.p2LeftADir == p2AccelState)
+                    {
+                        player2Direction[0] = -playerSize;
+                        player2Direction[1] = 0;
+                    }
+                    else if (inputSelection.p2RightADir == p2AccelState)
+                    {
+                        player2Direction[0] = playerSize;
+                        player2Direction[1] = 0;
+                    }
+                }
             }
         }
     }

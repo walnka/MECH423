@@ -38,3 +38,4 @@ C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exe
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.exe
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.pdb
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.LightCycles.resources
+C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.InputSelection.resources

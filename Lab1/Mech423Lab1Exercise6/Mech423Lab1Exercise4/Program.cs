@@ -16,7 +16,8 @@ namespace Mech423Lab1Exercise4
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SerialDemo());
+            //Application.Run(new SerialDemo());
+            //Application.Run(new InputSelection());
             Application.Run(new LightCycles());
         }
     }

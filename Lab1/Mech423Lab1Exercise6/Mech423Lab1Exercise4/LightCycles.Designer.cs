@@ -31,80 +31,77 @@ namespace Mech423Lab1Exercise4
         {
             this.components = new System.ComponentModel.Container();
             this.background = new System.Windows.Forms.PictureBox();
-            this.player1 = new System.Windows.Forms.PictureBox();
-            this.player2 = new System.Windows.Forms.PictureBox();
             this.velocityTimer = new System.Windows.Forms.Timer(this.components);
+            this.p1Serial = new System.IO.Ports.SerialPort(this.components);
+            this.p2Serial = new System.IO.Ports.SerialPort(this.components);
+            this.p1RefreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.p2RefreshTimer = new System.Windows.Forms.Timer(this.components);
+            this.FatherInputTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.background)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.player1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.player2)).BeginInit();
             this.SuspendLayout();
             // 
             // background
             // 
-            this.background.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.background.BackColor = System.Drawing.Color.White;
+            this.background.BackColor = System.Drawing.Color.Transparent;
             this.background.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.background.Location = new System.Drawing.Point(0, 0);
+            this.background.Location = new System.Drawing.Point(9, 9);
             this.background.Margin = new System.Windows.Forms.Padding(0);
-            this.background.MaximumSize = new System.Drawing.Size(500, 500);
-            this.background.MinimumSize = new System.Drawing.Size(500, 500);
             this.background.Name = "background";
-            this.background.Size = new System.Drawing.Size(500, 500);
-            this.background.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.background.Size = new System.Drawing.Size(750, 750);
             this.background.TabIndex = 0;
             this.background.TabStop = false;
-            // 
-            // player1
-            // 
-            this.player1.BackColor = System.Drawing.Color.Yellow;
-            this.player1.Location = new System.Drawing.Point(86, 290);
-            this.player1.Margin = new System.Windows.Forms.Padding(0);
-            this.player1.Name = "player1";
-            this.player1.Size = new System.Drawing.Size(10, 10);
-            this.player1.TabIndex = 1;
-            this.player1.TabStop = false;
-            // 
-            // player2
-            // 
-            this.player2.BackColor = System.Drawing.Color.Blue;
-            this.player2.Location = new System.Drawing.Point(393, 241);
-            this.player2.Margin = new System.Windows.Forms.Padding(0);
-            this.player2.Name = "player2";
-            this.player2.Size = new System.Drawing.Size(10, 10);
-            this.player2.TabIndex = 2;
-            this.player2.TabStop = false;
             // 
             // velocityTimer
             // 
             this.velocityTimer.Interval = 10;
             this.velocityTimer.Tick += new System.EventHandler(this.velocityTimer_Tick);
             // 
+            // p1Serial
+            // 
+            this.p1Serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.p1Serial_DataReceived);
+            // 
+            // p2Serial
+            // 
+            this.p2Serial.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(this.p2Serial_DataReceived);
+            // 
+            // p1RefreshTimer
+            // 
+            this.p1RefreshTimer.Tick += new System.EventHandler(this.p1RefreshTimer_tick);
+            // 
+            // p2RefreshTimer
+            // 
+            this.p2RefreshTimer.Tick += new System.EventHandler(this.p2RefreshTimer_tick);
+            // 
+            // FatherInputTimer
+            // 
+            this.FatherInputTimer.Interval = 2000;
+            this.FatherInputTimer.Tick += new System.EventHandler(this.FatherInputTimer_Tick);
+            // 
             // LightCycles
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(532, 523);
-            this.Controls.Add(this.player2);
-            this.Controls.Add(this.player1);
+            this.ClientSize = new System.Drawing.Size(770, 762);
             this.Controls.Add(this.background);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "LightCycles";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "LightCycles";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.LightCycles_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.background)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.player1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.player2)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.PictureBox background;
-        private System.Windows.Forms.PictureBox player1;
-        private System.Windows.Forms.PictureBox player2;
         private System.Windows.Forms.Timer velocityTimer;
+        public System.IO.Ports.SerialPort p1Serial;
+        public System.IO.Ports.SerialPort p2Serial;
+        public System.Windows.Forms.Timer p1RefreshTimer;
+        public System.Windows.Forms.Timer p2RefreshTimer;
+        private System.Windows.Forms.Timer FatherInputTimer;
     }
 }
