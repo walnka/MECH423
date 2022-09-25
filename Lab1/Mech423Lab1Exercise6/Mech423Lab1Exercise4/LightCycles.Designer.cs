@@ -36,7 +36,6 @@ namespace Mech423Lab1Exercise4
             this.p2Serial = new System.IO.Ports.SerialPort(this.components);
             this.p1RefreshTimer = new System.Windows.Forms.Timer(this.components);
             this.p2RefreshTimer = new System.Windows.Forms.Timer(this.components);
-            this.FatherInputTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.background)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,11 +71,6 @@ namespace Mech423Lab1Exercise4
             // 
             this.p2RefreshTimer.Tick += new System.EventHandler(this.p2RefreshTimer_tick);
             // 
-            // FatherInputTimer
-            // 
-            this.FatherInputTimer.Interval = 2000;
-            this.FatherInputTimer.Tick += new System.EventHandler(this.FatherInputTimer_Tick);
-            // 
             // LightCycles
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -102,6 +96,5 @@ namespace Mech423Lab1Exercise4
         public System.IO.Ports.SerialPort p2Serial;
         public System.Windows.Forms.Timer p1RefreshTimer;
         public System.Windows.Forms.Timer p2RefreshTimer;
-        private System.Windows.Forms.Timer FatherInputTimer;
     }
 }

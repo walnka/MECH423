@@ -38,20 +38,25 @@ namespace Mech423Lab1Exercise4
         public ConcurrentQueue<Int32> p2AxQueue = new ConcurrentQueue<Int32>();
         public ConcurrentQueue<Int32> p2AyQueue = new ConcurrentQueue<Int32>();
         public ConcurrentQueue<Int32> p2AzQueue = new ConcurrentQueue<Int32>();
+        string[] availableStatesP1 = new string[4];
+        string[] availableStatesP2 = new string[4];
+
 
         //Accelerometer Values
-        public int posMotionX = 200;
-        public int negMotionX = 70;
-        public int posMotionY = 170;
-        public int negMotionY = 50;
-        public int posMotionZ = 170;
-        public int negMotionZ = 60;
+        public int posMotionX = 170; //170
+        public int negMotionX = 80; //60
+        public int posMotionY = 160;
+        public int negMotionY = 70;
+        public int posMotionZ = 160;
+        public int negMotionZ = 70;
 
         public LightCycles()
         {
             InitializeComponent();
             inputSelection.TheParent = this;
             inputSelection.ShowDialog();
+            availableStatesP1[0] = inputSelection.p1UpADir; availableStatesP1[1] = inputSelection.p1DownADir; availableStatesP1[2] = inputSelection.p1LeftADir; availableStatesP1[3] = inputSelection.p1RightADir;
+            availableStatesP2[0] = inputSelection.p2UpADir; availableStatesP2[1] = inputSelection.p2DownADir; availableStatesP2[2] = inputSelection.p2LeftADir; availableStatesP2[3] = inputSelection.p2RightADir;
             velocityTimer.Interval = 40;
             background.Left = 0;
             background.Top = 0;
@@ -85,6 +90,8 @@ namespace Mech423Lab1Exercise4
                 }
             }
             velocityTimer.Start();
+            p1AccelState = "0";
+            p2AccelState = "0";
         }
 
         private void velocityTimer_Tick(object sender, EventArgs e)
@@ -236,15 +243,23 @@ namespace Mech423Lab1Exercise4
                     {
                         p1AxQueue.TryDequeue(out int trash);
                     }
-                    if (nextByte > posMotionX && p1AccelState != "+X"&& p1AccelState != "-X")
+                    if (nextByte > posMotionX && p1AccelState != "+X" && p1AccelState != "-X")
                     {
-                        p1AccelState = "+X";
-                        p1AccelStateChange = true;
+                        string stateName = "+X";
+                        if( !inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionX && p1AccelState != "+X" && p1AccelState != "-X")
                     {
-                        p1AccelState = "-X";
-                        p1AccelStateChange = true;
+                        string stateName = "-X";
+                        if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                 }
                 else if (p1State == "Ay")
@@ -257,13 +272,21 @@ namespace Mech423Lab1Exercise4
                     }
                     if (nextByte > posMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
                     {
-                        p1AccelState = "+Y"; 
-                        p1AccelStateChange = true;
+                        string stateName = "+Y";
+                        if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionY && p1AccelState != "+Y" && p1AccelState != "-Y")
                     {
-                        p1AccelState = "-Y";
-                        p1AccelStateChange = true;
+                        string stateName = "-Y";
+                        if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                 }
                 else if (p1State == "Az")
@@ -276,13 +299,21 @@ namespace Mech423Lab1Exercise4
                     }
                     if (nextByte > posMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
                     {
-                        p1AccelState = "+Z";
-                        p1AccelStateChange = true;
+                        string stateName = "+Z";
+                        if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionZ && p1AccelState != "+Z" && p1AccelState != "-Z")
                     {
-                        p1AccelState = "-Z";
-                        p1AccelStateChange = true;
+                        string stateName = "-Z";
+                        if (!inputSelection.p1Ready.Checked || availableStatesP1[0] == stateName || availableStatesP1[1] == stateName || availableStatesP1[2] == stateName || availableStatesP1[3] == stateName)
+                        {
+                            p1AccelState = stateName;
+                            p1AccelStateChange = true;
+                        }
                     }
                 }
                 if (p1AccelStateChange)
@@ -312,12 +343,6 @@ namespace Mech423Lab1Exercise4
             }
         }
 
-        private void FatherInputTimer_Tick(object sender, EventArgs e)
-        {
-            bool waitingforinput = false;
-
-        }
-
         private void p2RefreshTimer_tick(object sender, EventArgs e)
         {
 
@@ -339,13 +364,21 @@ namespace Mech423Lab1Exercise4
                     }
                     if (nextByte > posMotionX && p2AccelState != "+X" && p2AccelState != "-X")
                     {
-                        p2AccelState = "+X";
-                        p2AccelStateChange = true;
+                        string stateName = "+X";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionX && p2AccelState != "+X" && p2AccelState != "-X")
                     {
-                        p2AccelState = "-X";
-                        p2AccelStateChange = true;
+                        string stateName = "-X";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                 }
                 else if (p2State == "Ay")
@@ -358,13 +391,21 @@ namespace Mech423Lab1Exercise4
                     }
                     if (nextByte > posMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
                     {
-                        p2AccelState = "+Y";
-                        p2AccelStateChange = true;
+                        string stateName = "+Y";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionY && p2AccelState != "+Y" && p2AccelState != "-Y")
                     {
-                        p2AccelState = "-Y";
-                        p2AccelStateChange = true;
+                        string stateName = "-Y";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                 }
                 else if (p2State == "Az")
@@ -377,13 +418,21 @@ namespace Mech423Lab1Exercise4
                     }
                     if (nextByte > posMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
                     {
-                        p2AccelState = "+Z";
-                        p2AccelStateChange = true;
+                        string stateName = "+Z";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                     else if (nextByte < negMotionZ && p2AccelState != "+Z" && p2AccelState != "-Z")
                     {
-                        p2AccelState = "-Z";
-                        p2AccelStateChange = true;
+                        string stateName = "-Z";
+                        if (!inputSelection.p2Ready.Checked || availableStatesP2[0] == stateName || availableStatesP2[1] == stateName || availableStatesP2[2] == stateName || availableStatesP2[3] == stateName)
+                        {
+                            p2AccelState = stateName;
+                            p2AccelStateChange = true;
+                        }
                     }
                 }
                 if (p2AccelStateChange)

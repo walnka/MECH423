@@ -429,10 +429,10 @@ namespace Mech423Lab1Exercise4
         private System.Windows.Forms.Button User2RightButton;
         private System.Windows.Forms.Button User2LeftButton;
         private System.Windows.Forms.Button User2UpButton;
-        private System.Windows.Forms.CheckBox p1Ready;
-        private System.Windows.Forms.CheckBox p2Ready;
         public System.Windows.Forms.Timer InputTimer;
         private System.Windows.Forms.CheckBox p1ConnectCheck;
         private System.Windows.Forms.CheckBox p2ConnectCheck;
+        public System.Windows.Forms.CheckBox p1Ready;
+        public System.Windows.Forms.CheckBox p2Ready;
     }
 }
