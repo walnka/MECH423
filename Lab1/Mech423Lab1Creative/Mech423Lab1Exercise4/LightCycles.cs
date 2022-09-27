@@ -17,7 +17,7 @@ namespace Mech423Lab1Exercise4
         static int playerSize = 5;
         int[] player1Direction = new int[2]; // X Direction, Y Direction
         int[] player2Direction = new int[2]; // X Direction, Y Direction
-        Bitmap field = new Bitmap(@"C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise6\Mech423Lab1Exercise4\field.bmp", true);
+        Bitmap field = new Bitmap(@"C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Creative\Mech423Lab1Exercise4\field.bmp", true);
         Color p1Color = Color.Yellow;
         Color p2Color = Color.Blue;
         int player1Left, player1Top, player2Left, player2Top;
@@ -52,7 +52,7 @@ namespace Mech423Lab1Exercise4
 
         public LightCycles()
         {
-            this.Location = Screen.AllScreens[1].WorkingArea.Location;
+            //this.Location = Screen.AllScreens[1].WorkingArea.Location;
             InitializeComponent();
             inputSelection.TheParent = this;
             inputSelection.ShowDialog();

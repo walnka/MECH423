@@ -25,7 +25,7 @@ namespace Mech423Lab1Exercise4
 
         public InputSelection()
         {
-            this.Location = Screen.AllScreens[1].WorkingArea.Location;
+            //this.Location = Screen.AllScreens[1].WorkingArea.Location;
             InitializeComponent();
         }
 
