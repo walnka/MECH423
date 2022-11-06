@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.0                     
 ******************************************************************************
->> Linked Mon Oct 10 11:10:20 2022
+>> Linked Wed Oct 12 16:29:38 2022
 
 OUTPUT FILE NAME:   <Exercise4.out>
 ENTRY POINT SYMBOL: "_c_int00_noinit_noargs_mpu"  address: 0000c2b0

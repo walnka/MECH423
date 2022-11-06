@@ -19,7 +19,7 @@ int main(void)
 	TB1CCTL1 = OUTMOD_7;
 	TB1CCTL2 = OUTMOD_7;
 	TB1CCR0 = 1000;
-	TB1CCR1 = 1000;
+	TB1CCR1 = 500;
 	TB1CCR2 = 250;
 
 	// Configure P3.4 and P3.5
