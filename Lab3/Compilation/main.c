@@ -27,18 +27,13 @@ int main(void)
     TB2CCTL1 = OUTMOD_7;                    // CCR1 reset/set
     TB2CCR1 = 0;                         // CCR1 PWM duty cycle
 
-    // Configure outputs
+    // Configure outputs for UART 1
     P2SEL0 |= BIT1;
     P2DIR |= BIT1;
 
     P3DIR |= BIT6 + BIT7;                   // Output pins for AIN2 and AIN1 respectively
 
-
-//    // Set P1.6 as input
-//    P1SEL0 |= BIT6;
-//    P1SEL1 |= BIT6;
-
- //    Configure ports for UART
+    // Configure ports for UART
     P2SEL0 &= ~(BIT5 + BIT6);
     P2SEL1 |= BIT5 + BIT6;
 
