@@ -67,7 +67,6 @@ namespace Mech423Lab1Exercise4
                 try
                 {
                     serialPort.Open();
-                    serialPort.Write("A");
                 }
                 catch (Exception connectError)
                 {
