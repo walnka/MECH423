@@ -114,12 +114,14 @@ int main(void)
                 TB2CCR1 = dataByte;
                 break;
             case 3: // Single Step CW
+                contStepperMode = 0;
                 if (stepperState == 7)
                     stepperState = 0;
                 else
                     stepperState++;
                 break;
             case 4: // Single Step CCW
+                contStepperMode = 0;
                 if (stepperState == 0)
                     stepperState = 7;
                 else
@@ -127,11 +129,11 @@ int main(void)
                 break;
             case 5: // Continuous Step CW
                 contStepperMode = 1;
-                TA1CCR0 = dataByte;
+                TA1CCR0 = 0xFFFF - dataByte;
                 break;
             case 6: // Continuous Step CCW
                 contStepperMode = -1;
-                TA1CCR0 = dataByte;
+                TA1CCR0 = 0xFFFF - dataByte;
                 break;
             case 7: // Stop Stepper Continous
                 contStepperMode = 0;
@@ -144,11 +146,11 @@ int main(void)
 //            // Set the timer period to dataByte
 //            TB1CCR1 = dataByte;
 
-//            // Remove the processed bytes from the buffer
-//            length -= 5;                        // Decrease length by 5
-//            if (50 - tail <= 5) { tail = 0; }   // Check if tail at end of buffer and if so put it at start
-//            else { tail += 5; }                 // Else, increase tail by 5
-//
+            // Remove the processed bytes from the buffer
+            length -= 5;                        // Decrease length by 5
+            if (50 - tail <= 5) { tail = 0; }   // Check if tail at end of buffer and if so put it at start
+            else { tail += 5; }                 // Else, increase tail by 5
+
             // reset the data received flag
             rxFlag = 0;
         }
