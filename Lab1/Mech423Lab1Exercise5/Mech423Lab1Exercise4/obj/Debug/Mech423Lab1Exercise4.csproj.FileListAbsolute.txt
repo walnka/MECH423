@@ -27,3 +27,14 @@ C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exe
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.exe
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.pdb
 C:\Users\willk\Documents\MECHA4\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.csproj.AssemblyReference.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\bin\Debug\Mech423Lab1Exercise4.exe.config
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\bin\Debug\Mech423Lab1Exercise4.exe
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\bin\Debug\Mech423Lab1Exercise4.pdb
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.csproj.AssemblyReference.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.csproj.SuggestedBindingRedirects.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.SerialDemo.resources
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.Properties.Resources.resources
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.csproj.GenerateResource.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.csproj.CoreCompileInputs.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.exe
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Labs\Lab 1\Willem\MECH423\Lab1\Mech423Lab1Exercise5\Mech423Lab1Exercise4\obj\Debug\Mech423Lab1Exercise4.pdb
