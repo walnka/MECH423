@@ -53,6 +53,12 @@
             this.labelDCSpeed = new System.Windows.Forms.Label();
             this.labelStepperSpeed = new System.Windows.Forms.Label();
             this.trackBarStepperSpeed = new System.Windows.Forms.TrackBar();
+            this.buttonStepCW = new System.Windows.Forms.Button();
+            this.buttonStepCCW = new System.Windows.Forms.Button();
+            this.DCSpeed = new System.Windows.Forms.Label();
+            this.StepperSpeed = new System.Windows.Forms.Label();
+            this.buttonStopDC = new System.Windows.Forms.Button();
+            this.buttonStopStepper = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarStepperSpeed)).BeginInit();
             this.SuspendLayout();
@@ -242,37 +248,99 @@
             this.labelDCSpeed.AutoSize = true;
             this.labelDCSpeed.Location = new System.Drawing.Point(12, 424);
             this.labelDCSpeed.Name = "labelDCSpeed";
-            this.labelDCSpeed.Size = new System.Drawing.Size(107, 16);
+            this.labelDCSpeed.Size = new System.Drawing.Size(110, 16);
             this.labelDCSpeed.TabIndex = 19;
-            this.labelDCSpeed.Text = "DC Motor Speed";
+            this.labelDCSpeed.Text = "DC Motor Speed:";
             // 
             // labelStepperSpeed
             // 
             this.labelStepperSpeed.AutoSize = true;
             this.labelStepperSpeed.Location = new System.Drawing.Point(12, 502);
             this.labelStepperSpeed.Name = "labelStepperSpeed";
-            this.labelStepperSpeed.Size = new System.Drawing.Size(136, 16);
+            this.labelStepperSpeed.Size = new System.Drawing.Size(139, 16);
             this.labelStepperSpeed.TabIndex = 21;
-            this.labelStepperSpeed.Text = "Stepper Motor Speed";
+            this.labelStepperSpeed.Text = "Stepper Motor Speed:";
             // 
             // trackBarStepperSpeed
             // 
-            this.trackBarStepperSpeed.LargeChange = 1000;
+            this.trackBarStepperSpeed.LargeChange = 10;
             this.trackBarStepperSpeed.Location = new System.Drawing.Point(12, 521);
-            this.trackBarStepperSpeed.Maximum = 65535;
-            this.trackBarStepperSpeed.Minimum = -65535;
+            this.trackBarStepperSpeed.Maximum = 1000;
+            this.trackBarStepperSpeed.Minimum = -1000;
             this.trackBarStepperSpeed.Name = "trackBarStepperSpeed";
             this.trackBarStepperSpeed.Size = new System.Drawing.Size(548, 56);
-            this.trackBarStepperSpeed.SmallChange = 100;
+            this.trackBarStepperSpeed.SmallChange = 10;
             this.trackBarStepperSpeed.TabIndex = 20;
-            this.trackBarStepperSpeed.TickFrequency = 100;
+            this.trackBarStepperSpeed.TickFrequency = 10;
             this.trackBarStepperSpeed.ValueChanged += new System.EventHandler(this.trackBarStepperSpeed_ValueChanged);
+            // 
+            // buttonStepCW
+            // 
+            this.buttonStepCW.Location = new System.Drawing.Point(196, 71);
+            this.buttonStepCW.Name = "buttonStepCW";
+            this.buttonStepCW.Size = new System.Drawing.Size(75, 23);
+            this.buttonStepCW.TabIndex = 22;
+            this.buttonStepCW.Text = "Step CW";
+            this.buttonStepCW.UseVisualStyleBackColor = true;
+            this.buttonStepCW.Click += new System.EventHandler(this.buttonStepCW_Click);
+            // 
+            // buttonStepCCW
+            // 
+            this.buttonStepCCW.Location = new System.Drawing.Point(277, 71);
+            this.buttonStepCCW.Name = "buttonStepCCW";
+            this.buttonStepCCW.Size = new System.Drawing.Size(86, 23);
+            this.buttonStepCCW.TabIndex = 23;
+            this.buttonStepCCW.Text = "Step CCW";
+            this.buttonStepCCW.UseVisualStyleBackColor = true;
+            this.buttonStepCCW.Click += new System.EventHandler(this.buttonStepCCW_Click);
+            // 
+            // DCSpeed
+            // 
+            this.DCSpeed.AutoSize = true;
+            this.DCSpeed.Location = new System.Drawing.Point(134, 424);
+            this.DCSpeed.Name = "DCSpeed";
+            this.DCSpeed.Size = new System.Drawing.Size(0, 16);
+            this.DCSpeed.TabIndex = 24;
+            // 
+            // StepperSpeed
+            // 
+            this.StepperSpeed.AutoSize = true;
+            this.StepperSpeed.Location = new System.Drawing.Point(171, 502);
+            this.StepperSpeed.Name = "StepperSpeed";
+            this.StepperSpeed.Size = new System.Drawing.Size(0, 16);
+            this.StepperSpeed.TabIndex = 25;
+            // 
+            // buttonStopDC
+            // 
+            this.buttonStopDC.Location = new System.Drawing.Point(369, 71);
+            this.buttonStopDC.Name = "buttonStopDC";
+            this.buttonStopDC.Size = new System.Drawing.Size(75, 23);
+            this.buttonStopDC.TabIndex = 26;
+            this.buttonStopDC.Text = "Stop DC";
+            this.buttonStopDC.UseVisualStyleBackColor = true;
+            this.buttonStopDC.Click += new System.EventHandler(this.buttonStopDC_Click);
+            // 
+            // buttonStopStepper
+            // 
+            this.buttonStopStepper.Location = new System.Drawing.Point(450, 71);
+            this.buttonStopStepper.Name = "buttonStopStepper";
+            this.buttonStopStepper.Size = new System.Drawing.Size(94, 23);
+            this.buttonStopStepper.TabIndex = 27;
+            this.buttonStopStepper.Text = "Stop Stepper";
+            this.buttonStopStepper.UseVisualStyleBackColor = true;
+            this.buttonStopStepper.Click += new System.EventHandler(this.buttonStopStepper_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(576, 598);
+            this.Controls.Add(this.buttonStopStepper);
+            this.Controls.Add(this.buttonStopDC);
+            this.Controls.Add(this.StepperSpeed);
+            this.Controls.Add(this.DCSpeed);
+            this.Controls.Add(this.buttonStepCCW);
+            this.Controls.Add(this.buttonStepCW);
             this.Controls.Add(this.labelStepperSpeed);
             this.Controls.Add(this.trackBarStepperSpeed);
             this.Controls.Add(this.labelDCSpeed);
@@ -330,6 +398,12 @@
         private System.Windows.Forms.Label labelDCSpeed;
         private System.Windows.Forms.Label labelStepperSpeed;
         private System.Windows.Forms.TrackBar trackBarStepperSpeed;
+        private System.Windows.Forms.Button buttonStepCW;
+        private System.Windows.Forms.Button buttonStepCCW;
+        private System.Windows.Forms.Label DCSpeed;
+        private System.Windows.Forms.Label StepperSpeed;
+        private System.Windows.Forms.Button buttonStopDC;
+        private System.Windows.Forms.Button buttonStopStepper;
     }
 }
 

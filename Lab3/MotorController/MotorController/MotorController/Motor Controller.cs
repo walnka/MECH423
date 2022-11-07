@@ -15,15 +15,23 @@ namespace MotorController
     {
         const int packetLength = 5;
         const int startIndex = 0, commandIndex = 1, MSBIndex = 2, LSBIndex = 3, escapeIndex = 4;
-        const Byte dcCW = 1, dcCCW = 2, stepCW = 5, stepCCW = 6;
+        const Byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7;
+
+        const int dcTickMax = 65535;
+        const int stepTickMax = 65535;
+        const int dcTick0 = 0;
+        const int stepTick0 = 50000;
+        const int dcDeadzone = 500;
+        const int stepperDeadzone = 5;
 
         Byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
-
         int dcLSB, dcMSB, stepLSB, stepMSB;
+
         public Form1()
         {
             InitializeComponent();
+            output[startIndex] = 255;
             comboBoxCOMPorts.Items.Clear();
             comboBoxCOMPorts.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
             if (comboBoxCOMPorts.Items.Count == 0)
@@ -49,6 +57,29 @@ namespace MotorController
                 serialPort1.Open();
                 timer1.Enabled = true;
             }
+        }
+
+        private void buttonStopDC_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = dcStop;
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+
+        private void buttonStopStepper_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = stepStop;
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+
+        private void buttonStepCW_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = stepCW;
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+        private void buttonStepCCW_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = stepCCW;
+            serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmit_Click(object sender, EventArgs e)
@@ -113,21 +144,28 @@ namespace MotorController
             if (trackBarDCSpeed.Value > 0) { output[commandIndex] = dcCW; }
             else { output[commandIndex] = dcCCW; }
 
-            if (Math.Abs(trackBarDCSpeed.Value) < 500)
+            // Display speed
+            DCSpeed.Text = (trackBarDCSpeed.Value / trackBarDCSpeed.Maximum).ToString();
+
+            // Deadzone
+            if (Math.Abs(trackBarDCSpeed.Value) < dcDeadzone)
             {
                 dcLSB = 0;
                 dcMSB = 0;
             }
             else
             {
-                dcLSB = Math.Abs(trackBarDCSpeed.Value) & 0xFF;
-                dcMSB = (Math.Abs(trackBarDCSpeed.Value) >> 8) & 0xFF;
+                // Take abs value and scale
+                dcLSB = Math.Abs(trackBarDCSpeed.Value * trackBarDCSpeed.TickFrequency / (dcTickMax - dcTick0) + dcTick0) & 0xFF;
+                dcMSB = Math.Abs(trackBarDCSpeed.Value * trackBarDCSpeed.TickFrequency / (dcTickMax - dcTick0) + dcTick0) >> 8;
             }
 
+            // Check if either byte is 255 and assign escape byte accordingly
             output[escapeIndex] = 0;
             if (dcLSB == 255) { output[escapeIndex] = 1; }
             if (dcMSB == 255) { output[escapeIndex] += 2; }
 
+            // Assign PWM bytes in buffer and transmit to serial port
             output[MSBIndex] = Convert.ToByte(dcMSB);
             output[LSBIndex] = Convert.ToByte(dcLSB);
             serialPort1.Write(output, startIndex, packetLength);
@@ -136,24 +174,31 @@ namespace MotorController
         private void trackBarStepperSpeed_ValueChanged(object sender, EventArgs e)
         {
             // Check direction
-            if (trackBarStepperSpeed.Value > 0) { output[commandIndex] = stepCW; }
-            else { output[commandIndex] = stepCCW; }
+            if (trackBarStepperSpeed.Value > 0) { output[commandIndex] = stepContCW; }
+            else { output[commandIndex] = stepContCCW; }
 
-            if (Math.Abs(trackBarStepperSpeed.Value) < 500)
+            // Display speed
+            StepperSpeed.Text = (trackBarStepperSpeed.Value / trackBarStepperSpeed.Maximum).ToString();
+
+            // Deadzone
+            if (Math.Abs(trackBarStepperSpeed.Value) < stepperDeadzone)
             {
                 stepLSB = 0;
                 stepMSB = 0;
             }
             else
             {
-                stepLSB = Math.Abs(trackBarStepperSpeed.Value) & 0xFF;
-                stepMSB = (Math.Abs(trackBarStepperSpeed.Value) >> 8) & 0xFF;
+                // Take abs value and scale
+                stepLSB = Math.Abs(trackBarStepperSpeed.Value * trackBarStepperSpeed.TickFrequency / (stepTickMax - stepTick0) + stepTick0) & 0xFF;
+                stepMSB = Math.Abs(trackBarStepperSpeed.Value * trackBarStepperSpeed.TickFrequency / (stepTickMax - stepTick0) + stepTick0) >> 8;
             }
 
+            // Check if either byte is 255 and assign escape byte accordingly
             output[escapeIndex] = 0;
             if (stepLSB == 255) { output[escapeIndex] = 1; }
             if (stepMSB == 255) { output[escapeIndex] += 2; }
 
+            // Assign PWM bytes in buffer and transmit to serial port
             output[MSBIndex] = Convert.ToByte(stepMSB);
             output[LSBIndex] = Convert.ToByte(stepLSB);
             serialPort1.Write(output, startIndex, packetLength);
