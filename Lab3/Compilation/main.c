@@ -2,6 +2,7 @@
 
 
 #define bufferSize 50
+
 unsigned volatile int circBuffer[bufferSize];                   // For storing received data packets
 unsigned volatile int head = 0;                                 // circBuffer head
 unsigned volatile int tail = 0;                                 // circBuffer tail
@@ -11,6 +12,21 @@ unsigned volatile char* bufferEmptyMsg = "Buffer is empty";     // Message to pr
 unsigned volatile int rxByte = 0;                               // Temporary variable for storing each received byte
 volatile int rxFlag;                                            // Received data flag, triggered when a packet is received
 volatile int rxIndex = 0;                                           // Counts bytes in data packet
+unsigned int halfStepLookupTable[8][4] =
+{
+ {1, 0, 0, 0},
+ {1, 0, 1, 0},
+ {0, 0, 1, 0},
+ {0, 1, 1, 0},
+ {0, 1, 0, 0},
+ {0, 1, 0, 1},
+ {0, 0, 0, 1},
+ {1, 0, 0, 1}
+};
+unsigned volatile int stepperState = 0;
+unsigned volatile int stepperStateChange = 1;
+volatile int contStepperMode = 0;
+
 
 int main(void)
 {
@@ -22,16 +38,26 @@ int main(void)
     CSCTL2 = SELM_3 + SELS_3 + SELA_3;      // MCLK = DCO, ACLK = DCO, SMCLK = DCO
     CSCTL3 = DIVS_4;      // Set all dividers
 
-    // Configure timer B
+    // Configure timer B for DC Motor
     TB2CTL = TBSSEL_2 + MC_2 + TBCLR;       // SMCLK, continuous mode, clear TBR
     TB2CCTL1 = OUTMOD_7;                    // CCR1 reset/set
     TB2CCR1 = 0;                         // CCR1 PWM duty cycle
 
-    // Configure outputs for UART 1
+    // Configure timer A for Stepper Motor
+    TA1CTL = TBSSEL_2 + MC_1 + TACLR;       // SMCLK, continuous mode, clear TBR
+    TA1CCTL0 |= CCIE;                    // CCR1 reset/set
+    TA1CCR0 = 50000;                            // CCR1 PWM Duty Cycle
+
+    // Configure outputs for DC PWM Pin
     P2SEL0 |= BIT1;
     P2DIR |= BIT1;
 
+    // Configure outputs for DC AIN1 and AIN2 Pins
     P3DIR |= BIT6 + BIT7;                   // Output pins for AIN2 and AIN1 respectively
+
+    // Configure outputs for Stepper A1 A2 B1 B2 Pins
+    P1DIR |= BIT4 + BIT5;                   // AIN2 and AIN1 Pins respectively
+    P3DIR |= BIT4 + BIT5;                   // BIN2 and BIN1 Pins respectively
 
     // Configure ports for UART
     P2SEL0 &= ~(BIT5 + BIT6);
@@ -87,6 +113,29 @@ int main(void)
                 P3OUT &= ~BIT7;
                 TB2CCR1 = dataByte;
                 break;
+            case 3: // Single Step CW
+                if (stepperState == 7)
+                    stepperState = 0;
+                else
+                    stepperState++;
+                break;
+            case 4: // Single Step CCW
+                if (stepperState == 0)
+                    stepperState = 7;
+                else
+                    stepperState--;
+                break;
+            case 5: // Continuous Step CW
+                contStepperMode = 1;
+                TA1CCR0 = dataByte;
+                break;
+            case 6: // Continuous Step CCW
+                contStepperMode = -1;
+                TA1CCR0 = dataByte;
+                break;
+            case 7: // Stop Stepper Continous
+                contStepperMode = 0;
+                break;
             default: // No known command
                 break;
             }
@@ -103,6 +152,26 @@ int main(void)
             // reset the data received flag
             rxFlag = 0;
         }
+//        if (stepperStateChange == 1){
+            if (halfStepLookupTable[stepperState][0] == 1)
+                P1OUT |= BIT4;
+            else
+                P1OUT &= ~BIT4;
+            if (halfStepLookupTable[stepperState][1] == 1)
+                P1OUT |= BIT5;
+            else
+                P1OUT &= ~BIT5;
+            if (halfStepLookupTable[stepperState][2] == 1)
+                P3OUT |= BIT5;
+            else
+                P3OUT &= ~BIT5;
+            if (halfStepLookupTable[stepperState][3] == 1)
+                P3OUT |= BIT4;
+            else
+                P3OUT &= ~BIT4;
+
+//            stepperStateChange = 0;
+//        }
     }
     return 0;
 }
@@ -150,4 +219,20 @@ __interrupt void USCI_A1_ISR(void)
             while (!(UCA1IFG & UCTXIFG));
         }
     }
+}
+#pragma vector = TIMER1_A0_VECTOR
+__interrupt void TriggerTimer (void){
+    if (contStepperMode == 1){
+        if (stepperState == 7)
+            stepperState = 0;
+        else
+            stepperState++;
+    }
+    else if (contStepperMode == -1){
+        if (stepperState == 0)
+            stepperState = 7;
+        else
+            stepperState--;
+    }
+    TA1CCTL0 &= ~CCIFG;
 }
