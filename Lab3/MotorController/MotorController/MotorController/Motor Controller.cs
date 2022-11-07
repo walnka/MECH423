@@ -145,7 +145,7 @@ namespace MotorController
             else { output[commandIndex] = dcCCW; }
 
             // Display speed
-            DCSpeed.Text = (trackBarDCSpeed.Value / trackBarDCSpeed.Maximum).ToString();
+            DCSpeed.Text = (100 * (double)trackBarDCSpeed.Value / (double)trackBarDCSpeed.Maximum).ToString();
 
             // Deadzone
             if (Math.Abs(trackBarDCSpeed.Value) < dcDeadzone)
@@ -156,8 +156,8 @@ namespace MotorController
             else
             {
                 // Take abs value and scale
-                dcLSB = Math.Abs(trackBarDCSpeed.Value * trackBarDCSpeed.TickFrequency / (dcTickMax - dcTick0) + dcTick0) & 0xFF;
-                dcMSB = Math.Abs(trackBarDCSpeed.Value * trackBarDCSpeed.TickFrequency / (dcTickMax - dcTick0) + dcTick0) >> 8;
+                dcLSB = Math.Abs(trackBarDCSpeed.Value) & 0xFF;
+                dcMSB = Math.Abs(trackBarDCSpeed.Value) >> 8;
             }
 
             // Check if either byte is 255 and assign escape byte accordingly
@@ -178,7 +178,7 @@ namespace MotorController
             else { output[commandIndex] = stepContCCW; }
 
             // Display speed
-            StepperSpeed.Text = (trackBarStepperSpeed.Value / trackBarStepperSpeed.Maximum).ToString();
+            StepperSpeed.Text = (100 * (double)trackBarStepperSpeed.Value / (double)trackBarStepperSpeed.Maximum).ToString();
 
             // Deadzone
             if (Math.Abs(trackBarStepperSpeed.Value) < stepperDeadzone)
@@ -189,8 +189,8 @@ namespace MotorController
             else
             {
                 // Take abs value and scale
-                stepLSB = Math.Abs(trackBarStepperSpeed.Value * trackBarStepperSpeed.TickFrequency / (stepTickMax - stepTick0) + stepTick0) & 0xFF;
-                stepMSB = Math.Abs(trackBarStepperSpeed.Value * trackBarStepperSpeed.TickFrequency / (stepTickMax - stepTick0) + stepTick0) >> 8;
+                stepLSB = (Math.Abs(trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) & 0xFF;
+                stepMSB = (Math.Abs(trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) >> 8;
             }
 
             // Check if either byte is 255 and assign escape byte accordingly
