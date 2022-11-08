@@ -104,7 +104,7 @@ int main(void)
     TB2CCR1 = 0;                         // CCR1 PWM duty cycle
 
     // Configure timer A for Stepper Motor
-    TB0CTL = TBSSEL_1 + MC_1 + ID_3 + TACLR;       // SMCLK, continuous mode, clear TBR
+    TB0CTL = TBSSEL_1 + MC_1 + ID_3 + TBCLR;       // SMCLK, continuous mode, clear TBR
     TB0CCTL0 = CCIE;                    // CCR1 reset/set
     TB0CCR0 = 0x9C40;                            // CCR1 PWM Duty Cycle
 

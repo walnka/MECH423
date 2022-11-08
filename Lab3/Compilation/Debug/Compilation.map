@@ -1,10 +1,10 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.0                     
 ******************************************************************************
->> Linked Mon Nov  7 16:28:34 2022
+>> Linked Mon Nov  7 17:11:03 2022
 
 OUTPUT FILE NAME:   <Compilation.out>
-ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000c9d2
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000c9b2
 
 
 MEMORY CONFIGURATION
@@ -17,7 +17,7 @@ MEMORY CONFIGURATION
   INFOB                 00001800   00000080  00000000  00000080  RWIX
   INFOA                 00001880   00000080  00000000  00000080  RWIX
   RAM                   00001c00   00000400  000001e2  0000021e  RWIX
-  FRAM                  0000c200   00003d80  00000802  0000357e  RWIX
+  FRAM                  0000c200   00003d80  000007e2  0000359e  RWIX
   JTAGSIGNATURE         0000ff80   00000004  00000004  00000000  RWIX  ffff 
   BSLSIGNATURE          0000ff84   00000004  00000004  00000000  RWIX  ffff 
   IPESIGNATURE          0000ff88   00000008  00000008  00000000  RWIX  ffff 
@@ -113,21 +113,21 @@ section   page    origin      length       input sections
 .const     0    0000c23e    00000020     
                   0000c23e    00000020     main.obj (.const:.string)
 
-.text      0    0000c400    00000602     
-                  0000c400    000001e4     main.obj (.text:main)
-                  0000c5e4    00000100     main.obj (.text:updateStepperCoils)
-                  0000c6e4    000000ee     rts430x_lc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  0000c7d2    00000096     main.obj (.text:_isr:USCI_A1_ISR)
-                  0000c868    0000006a     rts430x_lc_sd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
-                  0000c8d2    00000046     main.obj (.text:_isr:TriggerTimer)
-                  0000c918    00000040     rts430x_lc_sd_eabi.lib : cpy_util.asm.obj (.text:__memcpy_far)
-                  0000c958    0000003e                            : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
-                  0000c996    0000003c                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0000c9d2    0000001c                            : boot.c.obj (.text:_isr:_c_int00_noargs)
-                  0000c9ee    00000008                            : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
-                  0000c9f6    00000006                            : exit.c.obj (.text:abort)
-                  0000c9fc    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  0000ca00    00000002                            : startup.c.obj (.text:_system_post_cinit)
+.text      0    0000c400    000005e2     
+                  0000c400    000001c4     main.obj (.text:main)
+                  0000c5c4    00000100     main.obj (.text:updateStepperCoils)
+                  0000c6c4    000000ee     rts430x_lc_sd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  0000c7b2    00000096     main.obj (.text:_isr:USCI_A1_ISR)
+                  0000c848    0000006a     rts430x_lc_sd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
+                  0000c8b2    00000046     main.obj (.text:_isr:TriggerTimer)
+                  0000c8f8    00000040     rts430x_lc_sd_eabi.lib : cpy_util.asm.obj (.text:__memcpy_far)
+                  0000c938    0000003e                            : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
+                  0000c976    0000003c                            : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  0000c9b2    0000001c                            : boot.c.obj (.text:_isr:_c_int00_noargs)
+                  0000c9ce    00000008                            : isr_trap.asm.obj (.text:_isr:__TI_ISR_TRAP)
+                  0000c9d6    00000006                            : exit.c.obj (.text:abort)
+                  0000c9dc    00000004                            : pre_init.c.obj (.text:_system_pre_init)
+                  0000c9e0    00000002                            : startup.c.obj (.text:_system_post_cinit)
 
 .bss       0    00001c00    0000012e     UNINITIALIZED
                   00001c00    0000012c     (.common:circBuffer)
@@ -239,9 +239,9 @@ MODULE SUMMARY
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     .\
-       main.obj                     960    36        322    
+       main.obj                     928    36        322    
     +--+----------------------------+------+---------+---------+
-       Total:                       960    36        322    
+       Total:                       928    36        322    
                                                             
     C:\ti\ccs1200\ccs\tools\compiler\ti-cgt-msp430_21.6.0.LTS\lib\rts430x_lc_sd_eabi.lib
        copy_decompress_lzss.c.obj   238    0         0      
@@ -282,7 +282,7 @@ MODULE SUMMARY
        Stack:                       0      0         160    
        Linker Generated:            0      60        0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 1538   142       482    
+       Grand Total:                 1506   142       482    
 
 
 LINKER GENERATED COPY TABLES
@@ -336,7 +336,7 @@ address   name
 00000712  ADC10MEM0_L                            
 000004be  BCD2BIN                                
 000004bc  BIN2BCD                                
-0000c9f6  C$$EXIT                                
+0000c9d6  C$$EXIT                                
 000008c0  CDCTL0                                 
 000008c1  CDCTL0_H                               
 000008c0  CDCTL0_L                               
@@ -731,7 +731,7 @@ address   name
 00000460  TB2EX0                                 
 0000046e  TB2IV                                  
 00000450  TB2R                                   
-0000c8d2  TriggerTimer                           
+0000c8b2  TriggerTimer                           
 000005d0  UCA0ABCTL                              
 000005c6  UCA0BRW                                
 000005c7  UCA0BRW_H                              
@@ -841,7 +841,7 @@ address   name
 0000064e  UCB0TXBUF                              
 0000064f  UCB0TXBUF_H                            
 0000064e  UCB0TXBUF_L                            
-0000c7d2  USCI_A1_ISR                            
+0000c7b2  USCI_A1_ISR                            
 0000015c  WDTCTL                                 
 0000015d  WDTCTL_H                               
 0000015c  WDTCTL_L                               
@@ -852,10 +852,10 @@ address   name
 0000c23e  __TI_CINIT_Warm                        
 0000c21c  __TI_Handler_Table_Base                
 0000c228  __TI_Handler_Table_Limit               
-0000c9ee  __TI_ISR_TRAP                          
-0000c868  __TI_auto_init_nobinit_nopinit_hold_wdt
-0000c6e4  __TI_decompress_lzss                   
-0000c996  __TI_decompress_none                   
+0000c9ce  __TI_ISR_TRAP                          
+0000c848  __TI_auto_init_nobinit_nopinit_hold_wdt
+0000c6c4  __TI_decompress_lzss                   
+0000c976  __TI_decompress_none                   
 0000ffce  __TI_int31                             
 0000ffd0  __TI_int32                             
 0000ffd2  __TI_int33                             
@@ -883,15 +883,15 @@ address   name
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
-0000c958  __TI_zero_init_nomemset                
+0000c938  __TI_zero_init_nomemset                
 ffffffff  __c_args__                             
-0000c918  __memcpy_far                           
-0000c9d2  _c_int00_noargs                        
+0000c8f8  __memcpy_far                           
+0000c9b2  _c_int00_noargs                        
 0000fffe  _reset_vector                          
 00001f60  _stack                                 
-0000ca00  _system_post_cinit                     
-0000c9fc  _system_pre_init                       
-0000c9f6  abort                                  
+0000c9e0  _system_post_cinit                     
+0000c9dc  _system_pre_init                       
+0000c9d6  abort                                  
 00001d36  bufferEmptyMsg                         
 00001d34  bufferFullMsg                          
 00001c00  circBuffer                             
@@ -908,7 +908,7 @@ ffffffff  __c_args__
 00001d3c  stepperState                           
 00001d3e  stepperStateChange                     
 00001d30  tail                                   
-0000c5e4  updateStepperCoils                     
+0000c5c4  updateStepperCoils                     
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -1477,20 +1477,20 @@ address   name
 0000c23e  __TI_CINIT_Warm                        
 0000c400  fram_rx_start                          
 0000c400  main                                   
-0000c5e4  updateStepperCoils                     
-0000c6e4  __TI_decompress_lzss                   
-0000c7d2  USCI_A1_ISR                            
-0000c868  __TI_auto_init_nobinit_nopinit_hold_wdt
-0000c8d2  TriggerTimer                           
-0000c918  __memcpy_far                           
-0000c958  __TI_zero_init_nomemset                
-0000c996  __TI_decompress_none                   
-0000c9d2  _c_int00_noargs                        
-0000c9ee  __TI_ISR_TRAP                          
-0000c9f6  C$$EXIT                                
-0000c9f6  abort                                  
-0000c9fc  _system_pre_init                       
-0000ca00  _system_post_cinit                     
+0000c5c4  updateStepperCoils                     
+0000c6c4  __TI_decompress_lzss                   
+0000c7b2  USCI_A1_ISR                            
+0000c848  __TI_auto_init_nobinit_nopinit_hold_wdt
+0000c8b2  TriggerTimer                           
+0000c8f8  __memcpy_far                           
+0000c938  __TI_zero_init_nomemset                
+0000c976  __TI_decompress_none                   
+0000c9b2  _c_int00_noargs                        
+0000c9ce  __TI_ISR_TRAP                          
+0000c9d6  C$$EXIT                                
+0000c9d6  abort                                  
+0000c9dc  _system_pre_init                       
+0000c9e0  _system_post_cinit                     
 0000ffce  __TI_int31                             
 0000ffd0  __TI_int32                             
 0000ffd2  __TI_int33                             
