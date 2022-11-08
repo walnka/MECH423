@@ -76,7 +76,7 @@
             this.labelBaud.AutoSize = true;
             this.labelBaud.Location = new System.Drawing.Point(140, 19);
             this.labelBaud.Name = "labelBaud";
-            this.labelBaud.Size = new System.Drawing.Size(74, 16);
+            this.labelBaud.Size = new System.Drawing.Size(79, 17);
             this.labelBaud.TabIndex = 1;
             this.labelBaud.Text = "Baud Rate:";
             // 
@@ -121,7 +121,7 @@
             this.labelStartByte.AutoSize = true;
             this.labelStartByte.Location = new System.Drawing.Point(13, 105);
             this.labelStartByte.Name = "labelStartByte";
-            this.labelStartByte.Size = new System.Drawing.Size(96, 16);
+            this.labelStartByte.Size = new System.Drawing.Size(108, 17);
             this.labelStartByte.TabIndex = 6;
             this.labelStartByte.Text = "Start Byte (255)";
             // 
@@ -130,7 +130,7 @@
             this.labelCommandByte.AutoSize = true;
             this.labelCommandByte.Location = new System.Drawing.Point(124, 105);
             this.labelCommandByte.Name = "labelCommandByte";
-            this.labelCommandByte.Size = new System.Drawing.Size(99, 16);
+            this.labelCommandByte.Size = new System.Drawing.Size(103, 17);
             this.labelCommandByte.TabIndex = 8;
             this.labelCommandByte.Text = "Command Byte";
             // 
@@ -147,7 +147,7 @@
             this.labelPWM1.AutoSize = true;
             this.labelPWM1.Location = new System.Drawing.Point(235, 105);
             this.labelPWM1.Name = "labelPWM1";
-            this.labelPWM1.Size = new System.Drawing.Size(80, 16);
+            this.labelPWM1.Size = new System.Drawing.Size(85, 17);
             this.labelPWM1.TabIndex = 10;
             this.labelPWM1.Text = "PWM Byte 1";
             // 
@@ -164,7 +164,7 @@
             this.labelPWM2.AutoSize = true;
             this.labelPWM2.Location = new System.Drawing.Point(347, 105);
             this.labelPWM2.Name = "labelPWM2";
-            this.labelPWM2.Size = new System.Drawing.Size(80, 16);
+            this.labelPWM2.Size = new System.Drawing.Size(85, 17);
             this.labelPWM2.TabIndex = 12;
             this.labelPWM2.Text = "PWM Byte 2";
             // 
@@ -181,7 +181,7 @@
             this.labelEscapeByte.AutoSize = true;
             this.labelEscapeByte.Location = new System.Drawing.Point(460, 105);
             this.labelEscapeByte.Name = "labelEscapeByte";
-            this.labelEscapeByte.Size = new System.Drawing.Size(84, 16);
+            this.labelEscapeByte.Size = new System.Drawing.Size(87, 17);
             this.labelEscapeByte.TabIndex = 14;
             this.labelEscapeByte.Text = "Escape Byte";
             // 
@@ -248,7 +248,7 @@
             this.labelDCSpeed.AutoSize = true;
             this.labelDCSpeed.Location = new System.Drawing.Point(12, 424);
             this.labelDCSpeed.Name = "labelDCSpeed";
-            this.labelDCSpeed.Size = new System.Drawing.Size(110, 16);
+            this.labelDCSpeed.Size = new System.Drawing.Size(116, 17);
             this.labelDCSpeed.TabIndex = 19;
             this.labelDCSpeed.Text = "DC Motor Speed:";
             // 
@@ -257,7 +257,7 @@
             this.labelStepperSpeed.AutoSize = true;
             this.labelStepperSpeed.Location = new System.Drawing.Point(12, 502);
             this.labelStepperSpeed.Name = "labelStepperSpeed";
-            this.labelStepperSpeed.Size = new System.Drawing.Size(139, 16);
+            this.labelStepperSpeed.Size = new System.Drawing.Size(147, 17);
             this.labelStepperSpeed.TabIndex = 21;
             this.labelStepperSpeed.Text = "Stepper Motor Speed:";
             // 
@@ -276,9 +276,9 @@
             // 
             // buttonStepCW
             // 
-            this.buttonStepCW.Location = new System.Drawing.Point(196, 71);
+            this.buttonStepCW.Location = new System.Drawing.Point(196, 61);
             this.buttonStepCW.Name = "buttonStepCW";
-            this.buttonStepCW.Size = new System.Drawing.Size(75, 23);
+            this.buttonStepCW.Size = new System.Drawing.Size(75, 33);
             this.buttonStepCW.TabIndex = 22;
             this.buttonStepCW.Text = "Step CW";
             this.buttonStepCW.UseVisualStyleBackColor = true;
@@ -286,9 +286,9 @@
             // 
             // buttonStepCCW
             // 
-            this.buttonStepCCW.Location = new System.Drawing.Point(277, 71);
+            this.buttonStepCCW.Location = new System.Drawing.Point(277, 61);
             this.buttonStepCCW.Name = "buttonStepCCW";
-            this.buttonStepCCW.Size = new System.Drawing.Size(86, 23);
+            this.buttonStepCCW.Size = new System.Drawing.Size(86, 33);
             this.buttonStepCCW.TabIndex = 23;
             this.buttonStepCCW.Text = "Step CCW";
             this.buttonStepCCW.UseVisualStyleBackColor = true;
@@ -299,7 +299,7 @@
             this.DCSpeed.AutoSize = true;
             this.DCSpeed.Location = new System.Drawing.Point(134, 424);
             this.DCSpeed.Name = "DCSpeed";
-            this.DCSpeed.Size = new System.Drawing.Size(0, 16);
+            this.DCSpeed.Size = new System.Drawing.Size(0, 17);
             this.DCSpeed.TabIndex = 24;
             // 
             // StepperSpeed
@@ -307,14 +307,14 @@
             this.StepperSpeed.AutoSize = true;
             this.StepperSpeed.Location = new System.Drawing.Point(171, 502);
             this.StepperSpeed.Name = "StepperSpeed";
-            this.StepperSpeed.Size = new System.Drawing.Size(0, 16);
+            this.StepperSpeed.Size = new System.Drawing.Size(0, 17);
             this.StepperSpeed.TabIndex = 25;
             // 
             // buttonStopDC
             // 
-            this.buttonStopDC.Location = new System.Drawing.Point(369, 71);
+            this.buttonStopDC.Location = new System.Drawing.Point(369, 61);
             this.buttonStopDC.Name = "buttonStopDC";
-            this.buttonStopDC.Size = new System.Drawing.Size(75, 23);
+            this.buttonStopDC.Size = new System.Drawing.Size(75, 33);
             this.buttonStopDC.TabIndex = 26;
             this.buttonStopDC.Text = "Stop DC";
             this.buttonStopDC.UseVisualStyleBackColor = true;
@@ -322,9 +322,9 @@
             // 
             // buttonStopStepper
             // 
-            this.buttonStopStepper.Location = new System.Drawing.Point(450, 71);
+            this.buttonStopStepper.Location = new System.Drawing.Point(450, 61);
             this.buttonStopStepper.Name = "buttonStopStepper";
-            this.buttonStopStepper.Size = new System.Drawing.Size(94, 23);
+            this.buttonStopStepper.Size = new System.Drawing.Size(110, 33);
             this.buttonStopStepper.TabIndex = 27;
             this.buttonStopStepper.Text = "Stop Stepper";
             this.buttonStopStepper.UseVisualStyleBackColor = true;
@@ -365,6 +365,7 @@
             this.Controls.Add(this.comboBoxCOMPorts);
             this.Name = "Form1";
             this.Text = "Motor Controller";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarStepperSpeed)).EndInit();
             this.ResumeLayout(false);

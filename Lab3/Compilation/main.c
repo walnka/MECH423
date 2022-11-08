@@ -1,7 +1,8 @@
 #include <msp430.h> 
 
 
-#define bufferSize 50
+#define bufferSize 150
+#define numPhases 8
 
 unsigned volatile int circBuffer[bufferSize];                   // For storing received data packets
 unsigned volatile int head = 0;                                 // circBuffer head
@@ -12,8 +13,14 @@ unsigned volatile char* bufferEmptyMsg = "Buffer is empty";     // Message to pr
 unsigned volatile int rxByte = 0;                               // Temporary variable for storing each received byte
 volatile int rxFlag;                                            // Received data flag, triggered when a packet is received
 volatile int rxIndex = 0;                                           // Counts bytes in data packet
-unsigned int halfStepLookupTable[8][4] =
+unsigned int halfStepLookupTable[numPhases][4] =
 {
+ // Full Step
+// {1, 0, 0, 0},
+// {0, 0, 1, 0},
+// {0, 1, 0, 0},
+// {0, 0, 0, 1}
+ // Half Step
  {1, 0, 0, 0},
  {1, 0, 1, 0},
  {0, 0, 1, 0},
@@ -27,6 +34,59 @@ unsigned volatile int stepperState = 0;
 unsigned volatile int stepperStateChange = 1;
 volatile int contStepperMode = 0;
 
+void updateStepperCoils(){
+    switch(stepperState){
+    case 0:
+        P1OUT |= BIT4;
+        P1OUT &= ~BIT5;
+        P3OUT &= ~BIT4;
+        P3OUT &= ~BIT5;
+        break;
+    case 1:
+        P1OUT |= BIT4;
+        P1OUT &= ~BIT5;
+        P3OUT |= BIT4;
+        P3OUT &= ~BIT5;
+        break;
+    case 2:
+        P1OUT &= ~BIT4;
+        P1OUT &= ~BIT5;
+        P3OUT |= BIT4;
+        P3OUT &= ~BIT5;
+        break;
+    case 3:
+        P1OUT &= ~BIT4;
+        P1OUT |= BIT5;
+        P3OUT |= BIT4;
+        P3OUT &= ~BIT5;
+        break;
+    case 4:
+        P1OUT &= ~BIT4;
+        P1OUT |= BIT5;
+        P3OUT &= ~BIT4;
+        P3OUT &= ~BIT5;
+        break;
+    case 5:
+        P1OUT &= ~BIT4;
+        P1OUT |= BIT5;
+        P3OUT &= ~BIT4;
+        P3OUT |= BIT5;
+        break;
+    case 6:
+        P1OUT &= ~BIT4;
+        P1OUT &= ~BIT5;
+        P3OUT &= ~BIT4;
+        P3OUT |= BIT5;
+        break;
+    case 7:
+        P1OUT |= BIT4;
+        P1OUT &= ~BIT5;
+        P3OUT &= ~BIT4;
+        P3OUT |= BIT5;
+        break;
+    }
+}
+
 
 int main(void)
 {
@@ -36,7 +96,7 @@ int main(void)
     CSCTL0 = 0xA500;                        // Write password to modify CS registers
     CSCTL1 = DCOFSEL0 + DCOFSEL1;           // DCO = 8 MHz
     CSCTL2 = SELM_3 + SELS_3 + SELA_3;      // MCLK = DCO, ACLK = DCO, SMCLK = DCO
-    CSCTL3 = DIVS_4;      // Set all dividers
+    CSCTL3 |= DIVS_4;      // Set all dividers
 
     // Configure timer B for DC Motor
     TB2CTL = TBSSEL_2 + MC_2 + TBCLR;       // SMCLK, continuous mode, clear TBR
@@ -44,9 +104,9 @@ int main(void)
     TB2CCR1 = 0;                         // CCR1 PWM duty cycle
 
     // Configure timer A for Stepper Motor
-    TA1CTL = TBSSEL_2 + MC_1 + TACLR;       // SMCLK, continuous mode, clear TBR
-    TA1CCTL0 |= CCIE;                    // CCR1 reset/set
-    TA1CCR0 = 50000;                            // CCR1 PWM Duty Cycle
+    TB0CTL = TBSSEL_1 + MC_1 + ID_3 + TACLR;       // SMCLK, continuous mode, clear TBR
+    TB0CCTL0 = CCIE;                    // CCR1 reset/set
+    TB0CCR0 = 0x9C40;                            // CCR1 PWM Duty Cycle
 
     // Configure outputs for DC PWM Pin
     P2SEL0 |= BIT1;
@@ -115,7 +175,7 @@ int main(void)
                 break;
             case 3: // Single Step CW
                 contStepperMode = 0;
-                if (stepperState == 7)
+                if (stepperState == numPhases -1)
                     stepperState = 0;
                 else
                     stepperState++;
@@ -123,19 +183,19 @@ int main(void)
             case 4: // Single Step CCW
                 contStepperMode = 0;
                 if (stepperState == 0)
-                    stepperState = 7;
+                    stepperState = numPhases-1;
                 else
                     stepperState--;
                 break;
             case 5: // Continuous Step CW
                 contStepperMode = 1;
-                TA1CCR0 = 0xFFFF - dataByte;
+                TB0CCR0 = 0xFFFF - dataByte;
                 break;
             case 6: // Continuous Step CCW
                 contStepperMode = -1;
-                TA1CCR0 = 0xFFFF - dataByte;
+                TB0CCR0 = 0xFFFF - dataByte;
                 break;
-            case 7: // Stop Stepper Continous
+            case 7: // Stop Stepper Continuous
                 contStepperMode = 0;
                 break;
             default: // No known command
@@ -146,34 +206,34 @@ int main(void)
 //            // Set the timer period to dataByte
 //            TB1CCR1 = dataByte;
 
-            // Remove the processed bytes from the buffer
+//             Remove the processed bytes from the buffer
             length -= 5;                        // Decrease length by 5
-            if (50 - tail <= 5) { tail = 0; }   // Check if tail at end of buffer and if so put it at start
+            if (bufferSize - tail <= 5) { tail = 0; }   // Check if tail at end of buffer and if so put it at start
             else { tail += 5; }                 // Else, increase tail by 5
 
             // reset the data received flag
             rxFlag = 0;
         }
-//        if (stepperStateChange == 1){
-            if (halfStepLookupTable[stepperState][0] == 1)
-                P1OUT |= BIT4;
-            else
-                P1OUT &= ~BIT4;
-            if (halfStepLookupTable[stepperState][1] == 1)
-                P1OUT |= BIT5;
-            else
-                P1OUT &= ~BIT5;
-            if (halfStepLookupTable[stepperState][2] == 1)
-                P3OUT |= BIT5;
-            else
-                P3OUT &= ~BIT5;
-            if (halfStepLookupTable[stepperState][3] == 1)
-                P3OUT |= BIT4;
-            else
-                P3OUT &= ~BIT4;
-
+        if (contStepperMode == 0){
+//            if (halfStepLookupTable[stepperState][0] == 1)
+//                P1OUT |= BIT4;
+//            else
+//                P1OUT &= ~BIT4;
+//            if (halfStepLookupTable[stepperState][1] == 1)
+//                P1OUT |= BIT5;
+//            else
+//                P1OUT &= ~BIT5;
+//            if (halfStepLookupTable[stepperState][2] == 1)
+//                P3OUT |= BIT4;
+//            else
+//                P3OUT &= ~BIT4;
+//            if (halfStepLookupTable[stepperState][3] == 1)
+//                P3OUT |= BIT5;
+//            else
+//                P3OUT &= ~BIT5;
+              updateStepperCoils();
 //            stepperStateChange = 0;
-//        }
+        }
     }
     return 0;
 }
@@ -222,19 +282,40 @@ __interrupt void USCI_A1_ISR(void)
         }
     }
 }
-#pragma vector = TIMER1_A0_VECTOR
+#pragma vector = TIMER0_B0_VECTOR
 __interrupt void TriggerTimer (void){
     if (contStepperMode == 1){
-        if (stepperState == 7)
+        if (stepperState == numPhases - 1)
             stepperState = 0;
         else
             stepperState++;
     }
     else if (contStepperMode == -1){
         if (stepperState == 0)
-            stepperState = 7;
+            stepperState = numPhases - 1;
         else
             stepperState--;
     }
-    TA1CCTL0 &= ~CCIFG;
+    if (contStepperMode != 0){
+        updateStepperCoils();
+//        if (halfStepLookupTable[stepperState][0] == 1)
+//            P1OUT |= BIT4;
+//        else
+//            P1OUT &= ~BIT4;
+//        if (halfStepLookupTable[stepperState][1] == 1)
+//            P1OUT |= BIT5;
+//        else
+//            P1OUT &= ~BIT5;
+//        if (halfStepLookupTable[stepperState][2] == 1)
+//            P3OUT |= BIT4;
+//        else
+//            P3OUT &= ~BIT4;
+//        if (halfStepLookupTable[stepperState][3] == 1)
+//            P3OUT |= BIT5;
+//        else
+//            P3OUT &= ~BIT5;
+    }
+
+    TB0CCTL0 &= ~CCIFG;
 }
+

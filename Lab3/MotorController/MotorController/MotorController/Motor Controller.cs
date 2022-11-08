@@ -18,9 +18,9 @@ namespace MotorController
         const Byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7;
 
         const int dcTickMax = 65535;
-        const int stepTickMax = 65535;
+        const int stepTickMax = 65345;
         const int dcTick0 = 0;
-        const int stepTick0 = 50000;
+        const int stepTick0 = 53760;
         const int dcDeadzone = 500;
         const int stepperDeadzone = 5;
 
@@ -59,16 +59,31 @@ namespace MotorController
             }
         }
 
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                output[commandIndex] = stepStop;
+                serialPort1.Write(output, startIndex, packetLength);
+                trackBarDCSpeed.Value = 0;
+                output[commandIndex] = stepStop;
+                serialPort1.Write(output, startIndex, packetLength);
+                trackBarStepperSpeed.Value = 0;
+            }
+        }
+
         private void buttonStopDC_Click(object sender, EventArgs e)
         {
             output[commandIndex] = dcStop;
             serialPort1.Write(output, startIndex, packetLength);
+            trackBarDCSpeed.Value = 0;
         }
 
         private void buttonStopStepper_Click(object sender, EventArgs e)
         {
             output[commandIndex] = stepStop;
             serialPort1.Write(output, startIndex, packetLength);
+            trackBarStepperSpeed.Value = 0;
         }
 
         private void buttonStepCW_Click(object sender, EventArgs e)
