@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,15 +15,18 @@ namespace MotorController
     public partial class Form1 : Form
     {
         const int packetLength = 5;
+        // Packet indices
         const int startIndex = 0, commandIndex = 1, MSBIndex = 2, LSBIndex = 3, escapeIndex = 4;
+        // Command Byte command values
         const Byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7;
 
+        // For scaling DC and stepper motor trackbars
         const int dcTickMax = 65535;
-        const int stepTickMax = 65345;
         const int dcTick0 = 0;
-        const int stepTick0 = 53760;
         const int dcDeadzone = 500;
-        const int stepperDeadzone = 5;
+        const int stepTickMax = 65345;
+        const int stepTick0 = 53760;
+        const int stepDeadzone = 5;
 
         Byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
@@ -42,6 +46,15 @@ namespace MotorController
             }
         }
 
+        private void getOutputPacketArray()
+        {
+            output[startIndex] = Convert.ToByte(textBoxStart.Text);
+            output[commandIndex] = Convert.ToByte(textBoxCommand.Text);
+            output[MSBIndex] = Convert.ToByte(textBoxPWM1.Text);
+            output[LSBIndex] = Convert.ToByte(textBoxPWM2.Text);
+            output[escapeIndex] = Convert.ToByte(textBoxEscape.Text);
+        }
+
         private void buttonConnect_Click(object sender, EventArgs e)
         {
             if (serialPort1.IsOpen == true)
@@ -56,19 +69,6 @@ namespace MotorController
                 serialPort1.BaudRate = Convert.ToInt16(textBoxBaud.Text);
                 serialPort1.Open();
                 timer1.Enabled = true;
-            }
-        }
-
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Escape)
-            {
-                output[commandIndex] = stepStop;
-                serialPort1.Write(output, startIndex, packetLength);
-                trackBarDCSpeed.Value = 0;
-                output[commandIndex] = stepStop;
-                serialPort1.Write(output, startIndex, packetLength);
-                trackBarStepperSpeed.Value = 0;
             }
         }
 
@@ -101,36 +101,17 @@ namespace MotorController
         {
             if (serialPort1.IsOpen == true)
             {
+                getOutputPacketArray();
                 serialPort1.Write(output, startIndex, packetLength);
+            }
+            else
+            {
+                textBoxUserConsole.AppendText("Serial port is closed\r\n");
             }
         }
 
-        private void textBoxStart_Leave(object sender, EventArgs e)
-        {
-            output[startIndex] = Convert.ToByte(textBoxStart.Text);
-        }
-
-        private void textBoxCommand_Leave(object sender, EventArgs e)
-        {
-            output[commandIndex] = Convert.ToByte(textBoxCommand.Text);
-        }
-
-        private void textBoxPWM1_Leave(object sender, EventArgs e)
-        {
-            output[MSBIndex] = Convert.ToByte(textBoxPWM1.Text);
-        }
-
-        private void textBoxPWM2_Leave(object sender, EventArgs e)
-        {
-            output[LSBIndex] = Convert.ToByte(textBoxPWM2.Text);
-        }
-
-        private void textBoxEscape_Leave(object sender, EventArgs e)
-        {
-            output[escapeIndex] = Convert.ToByte(textBoxEscape.Text);
-        }
-
         private void serialPort1_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+        // On data receive, gets new bytes from serial port and queues them in dataQueue
         {
             int newByte = 0;
             int bytesToRead;
@@ -138,18 +119,29 @@ namespace MotorController
 
             while (bytesToRead != 0)
             {
-                newByte = serialPort1.ReadByte();
-                dataQueue.Enqueue(newByte);
-                bytesToRead = serialPort1.BytesToRead;
+                newByte = serialPort1.ReadByte();           // Gets new byte from serial port
+                dataQueue.Enqueue(newByte);                 // Queues it in dataQueue
+                bytesToRead = serialPort1.BytesToRead;      // Checks for more bytes
             }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
+        // On timer tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
         {
+            int byteFlag = 0;       // flag for detecting position (= 0) or speed (= 1)
             int nextByte;
             while (dataQueue.TryDequeue(out nextByte))
             {
-                textBoxSerialDataStream.AppendText(nextByte.ToString());
+                if (byteFlag == 0)
+                {
+                    textBoxDCPosition.Text = nextByte.ToString();
+                    byteFlag = 1;
+                }
+                else
+                {
+                    textBoxDCSpeed.Text = nextByte.ToString();
+                    byteFlag = 0;
+                }
             }
         }
 
@@ -196,7 +188,7 @@ namespace MotorController
             StepperSpeed.Text = (100 * (double)trackBarStepperSpeed.Value / (double)trackBarStepperSpeed.Maximum).ToString();
 
             // Deadzone
-            if (Math.Abs(trackBarStepperSpeed.Value) < stepperDeadzone)
+            if (Math.Abs(trackBarStepperSpeed.Value) < stepDeadzone)
             {
                 stepLSB = 0;
                 stepMSB = 0;
