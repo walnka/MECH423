@@ -28,6 +28,16 @@ namespace MotorController
         const int stepTick0 = 53760;
         const int stepDeadzone = 5;
 
+        // Motor and gantry parameters
+        int motorCPR = 48;
+        double gearRatio = 20.4;
+        int yAxisMaxLength = 188;
+        int toothPitch = 2;
+        int toothNumber = 20;
+        int samplingPeriod = 100;
+        int timeCount = 0;
+
+
         Byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
         int dcLSB, dcMSB, stepLSB, stepMSB;
@@ -129,17 +139,34 @@ namespace MotorController
         // On timer tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
         {
             int byteFlag = 0;       // flag for detecting position (= 0) or speed (= 1)
+            int MSB = 0;
+            double newCount;
+            double lastCount = 0;
+            double position;
+            double speed;
             int nextByte;
             while (dataQueue.TryDequeue(out nextByte))
             {
                 if (byteFlag == 0)
                 {
-                    textBoxDCPosition.Text = nextByte.ToString();
+                    MSB = nextByte-0xA000;
                     byteFlag = 1;
                 }
                 else
                 {
-                    textBoxDCSpeed.Text = nextByte.ToString();
+                    nextByte -= 0xA000;
+                    timeCount++;
+                    newCount = (MSB << 8) | (nextByte & 0xFF);
+                    position = (newCount / (motorCPR * gearRatio * toothNumber * toothPitch));
+                    speed = (60 * (newCount - lastCount) / (samplingPeriod * motorCPR * gearRatio));
+
+                    textBoxDCPosition.Text = position.ToString();
+                    textBoxDCSpeed.Text = speed.ToString();
+
+                    chartPosSpeed.Series["Position"].Points.AddXY(timeCount * samplingPeriod, position);
+                    //chartPosSpeed.Series["Speed"].Points.AddXY(timeCount * samplingPeriod, speed);
+                    
+                    lastCount = newCount;
                     byteFlag = 0;
                 }
             }

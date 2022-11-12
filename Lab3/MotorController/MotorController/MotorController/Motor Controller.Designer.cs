@@ -29,6 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title2 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
             this.labelBaud = new System.Windows.Forms.Label();
             this.textBoxBaud = new System.Windows.Forms.TextBox();
@@ -63,8 +68,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxDCPosition = new System.Windows.Forms.TextBox();
             this.textBoxDCSpeed = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.chartPosSpeed = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarStepperSpeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartPosSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxCOMPorts
@@ -124,6 +133,7 @@
             this.textBoxStart.Name = "textBoxStart";
             this.textBoxStart.Size = new System.Drawing.Size(76, 20);
             this.textBoxStart.TabIndex = 5;
+            this.textBoxStart.Text = "255";
             // 
             // labelStartByte
             // 
@@ -170,6 +180,7 @@
             this.textBoxPWM1.Name = "textBoxPWM1";
             this.textBoxPWM1.Size = new System.Drawing.Size(76, 20);
             this.textBoxPWM1.TabIndex = 9;
+            this.textBoxPWM1.Text = "0";
             // 
             // labelPWM2
             // 
@@ -188,6 +199,7 @@
             this.textBoxPWM2.Name = "textBoxPWM2";
             this.textBoxPWM2.Size = new System.Drawing.Size(76, 20);
             this.textBoxPWM2.TabIndex = 11;
+            this.textBoxPWM2.Text = "0";
             // 
             // labelEscapeByte
             // 
@@ -206,6 +218,7 @@
             this.textBoxEscape.Name = "textBoxEscape";
             this.textBoxEscape.Size = new System.Drawing.Size(76, 20);
             this.textBoxEscape.TabIndex = 13;
+            this.textBoxEscape.Text = "0";
             // 
             // serialPort1
             // 
@@ -391,11 +404,62 @@
             this.textBoxDCSpeed.Size = new System.Drawing.Size(100, 20);
             this.textBoxDCSpeed.TabIndex = 31;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(219, 470);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(23, 13);
+            this.label4.TabIndex = 32;
+            this.label4.Text = "mm";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(219, 492);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(24, 13);
+            this.label5.TabIndex = 33;
+            this.label5.Text = "rpm";
+            // 
+            // chartPosSpeed
+            // 
+            chartArea2.AxisX.Title = "Time [ms]";
+            chartArea2.AxisX2.Title = "Speed [RPM]";
+            chartArea2.AxisY.Title = "Position [mm]";
+            chartArea2.AxisY2.Title = "Speed [RPM]";
+            chartArea2.Name = "ChartArea1";
+            this.chartPosSpeed.ChartAreas.Add(chartArea2);
+            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend2.Name = "Legend1";
+            this.chartPosSpeed.Legends.Add(legend2);
+            this.chartPosSpeed.Location = new System.Drawing.Point(437, 12);
+            this.chartPosSpeed.Name = "chartPosSpeed";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Position";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Legend = "Legend1";
+            series4.Name = "Speed";
+            series4.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chartPosSpeed.Series.Add(series3);
+            this.chartPosSpeed.Series.Add(series4);
+            this.chartPosSpeed.Size = new System.Drawing.Size(444, 506);
+            this.chartPosSpeed.TabIndex = 34;
+            title2.Name = "Title1";
+            title2.Text = "Data Plotting - Position & Speed vs Time";
+            this.chartPosSpeed.Titles.Add(title2);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(432, 530);
+            this.ClientSize = new System.Drawing.Size(893, 530);
+            this.Controls.Add(this.chartPosSpeed);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.textBoxDCSpeed);
             this.Controls.Add(this.textBoxDCPosition);
             this.Controls.Add(this.label3);
@@ -433,6 +497,7 @@
             this.Text = "Motor Controller";
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarStepperSpeed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartPosSpeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -474,6 +539,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxDCPosition;
         private System.Windows.Forms.TextBox textBoxDCSpeed;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartPosSpeed;
     }
 }
 
