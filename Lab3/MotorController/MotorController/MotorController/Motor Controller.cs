@@ -149,12 +149,11 @@ namespace MotorController
             {
                 if (byteFlag == 0)
                 {
-                    MSB = nextByte-0xA000;
+                    MSB = nextByte;
                     byteFlag = 1;
                 }
                 else
                 {
-                    nextByte -= 0xA000;
                     timeCount++;
                     newCount = (MSB << 8) | (nextByte & 0xFF);
                     position = (newCount / (motorCPR * gearRatio * toothNumber * toothPitch));
