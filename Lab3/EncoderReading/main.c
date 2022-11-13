@@ -178,6 +178,9 @@ int main(void)
             case 7: // Stop Stepper Continuous
                 contStepperMode = 0;
                 break;
+            case 8: // Zero the Encoder
+                TA0R = 0xA000;
+                TA1R = 0xA000;
             default: // No known command
                 break;
             }
