@@ -10,14 +10,12 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
-"./Liam - DC Motor Control.obj" \
-"./Liam - Lab 2 Exercise 10.obj" \
 "./main.obj" \
 "../lnk_msp430fr5739.cmd" \
 $(GEN_CMDS__FLAG) \
+-llibmpu_init_fr57xx.a \
 -llibmath.a \
 -llibc.a \
--llibmpu_init_fr57xx.a \
 
 -include ../makefile.init
 
@@ -124,42 +122,42 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-MotorDriverValidation.out \
+DCcloseLoop.out \
 
 EXE_OUTPUTS__QUOTED += \
-"MotorDriverValidation.out" \
+"DCcloseLoop.out" \
 
 BIN_OUTPUTS += \
-MotorDriverValidation.hex \
+DCcloseLoop.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"MotorDriverValidation.hex" \
+"DCcloseLoop.hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "MotorDriverValidation.out"
+	@$(MAKE) --no-print-directory -Onone "DCcloseLoop.out"
 
 # Tool invocations
-MotorDriverValidation.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+DCcloseLoop.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: MSP430 Linker'
-	"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/bin/cl430" -vmspx --use_hw_mpy=F5 --advice:power=all --define=__MSP430FR5739__ -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"MotorDriverValidation.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs1200/ccs/ccs_base/msp430/include" -i"C:/ti/ccs1200/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/lib" -i"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/include" -i"C:/ti/ccs1200/ccs/ccs_base/msp430/lib/FR57xx" --priority --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="MotorDriverValidation_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "MotorDriverValidation.out" $(ORDERED_OBJS)
+	"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/bin/cl430" -vmspx --use_hw_mpy=F5 --advice:power=all --define=__MSP430FR5739__ --define=_MPU_ENABLE -g --printf_support=minimal --diag_warning=225 --diag_wrap=off --display_error_number --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 -z -m"DCcloseLoop.map" --heap_size=160 --stack_size=160 --cinit_hold_wdt=on -i"C:/ti/ccs1200/ccs/ccs_base/msp430/include" -i"C:/ti/ccs1200/ccs/ccs_base/msp430/lib/5xx_6xx_FRxx" -i"C:/ti/ccs1200/ccs/ccs_base/msp430/lib/FR57xx" -i"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/lib" -i"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/include" --priority --reread_libs --define=_MPU_ENABLE --diag_wrap=off --display_error_number --warn_sections --xml_link_info="DCcloseLoop_linkInfo.xml" --use_hw_mpy=F5 --rom_model -o "DCcloseLoop.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-MotorDriverValidation.hex: $(EXE_OUTPUTS)
+DCcloseLoop.hex: $(EXE_OUTPUTS)
 	@echo 'Building secondary target: "$@"'
 	@echo 'Invoking: MSP430 Hex Utility'
-	"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off -o "MotorDriverValidation.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs1200/ccs/tools/compiler/ti-cgt-msp430_21.6.0.LTS/bin/hex430" --memwidth=8 --romwidth=8 --diag_wrap=off -o "DCcloseLoop.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building secondary target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Liam - DC Motor Control.obj" "Liam - Lab 2 Exercise 10.obj" "main.obj" 
-	-$(RM) "Liam - DC Motor Control.d" "Liam - Lab 2 Exercise 10.d" "main.d" 
+	-$(RM) "main.obj" 
+	-$(RM) "main.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

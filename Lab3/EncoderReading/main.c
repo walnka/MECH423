@@ -120,9 +120,9 @@ int main(void)
     TA1CCR0 = 0xFFFF;
 
     // Configure Timer for Interrupt sending encoder count
-    TB1CTL |= TBSSEL_2 + MC_2 + TBIE;
+    TB1CTL |= TBSSEL_2 + MC_1 + TBIE;
     //TB1CCTL0 = CCIE;
-    //TB1CCR0 = 0xC350; // Interrupt every 100ms
+    TB1CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
 
     // Setup Pins for DC Encoder Interrupt Capture
     P1SEL1 |= BIT1 + BIT2;
@@ -213,6 +213,7 @@ int main(void)
                 currentTA1 = 0;
                 prevTA0 = 0;
                 prevTA1 = 0;
+                break;
             default: // No known command
                 break;
             }
@@ -226,7 +227,7 @@ int main(void)
             rxFlag = 0;
         }
         if (contStepperMode == 0){
-              updateStepperCoils();
+          updateStepperCoils();
         }
     }
     return 0;

@@ -2,9 +2,17 @@
 
 
 #define bufferSize 150
-#define speedBufferSize 225
 #define numPhases 8
 #define maxEncoderJump 300
+
+// Control Constants
+const double Kd = 0xFFFF/123;
+const double Kenc = (4*40)/(20.4*48);
+const double Kp = 1;
+const double Kv = 0.00314;
+const double tau = 0.02375;
+unsigned volatile int xr = 0;
+unsigned volatile int xControlFlag = 0;
 
 unsigned volatile int circBuffer[bufferSize];                   // For storing received data packets
 unsigned volatile int head = 0;                                 // circBuffer head
@@ -35,12 +43,7 @@ unsigned int halfStepLookupTable[numPhases][4] =
 unsigned volatile int stepperState = 0;
 unsigned volatile int stepperStateChange = 1;
 volatile int contStepperMode = 0;
-unsigned volatile int currentTA0, currentTA1, prevTA0, prevTA1, prevEncoderCount;
-volatile int stepTesting = 0;
-
-// Variables for Rise Time Measurement
-unsigned volatile int speedBuffer[speedBufferSize];
-unsigned volatile int speedBufferIndex = 0;
+unsigned int currentTA0, currentTA1, prevTA0, prevTA1;
 
 void updateStepperCoils(){
     if (halfStepLookupTable[stepperState][0] == 1)
@@ -81,8 +84,6 @@ void transmitPackage(unsigned int instrByte, unsigned int dataByte1, unsigned in
     UCA1TXBUF = dataByte2;
     while (!(UCA1IFG & UCTXIFG));
     UCA1TXBUF = decoderByte;
-    while (!(UCA1IFG & UCTXIFG));
-    UCA1TXBUF = '\n\r';
     while (!(UCA1IFG & UCTXIFG));
 }
 
@@ -128,9 +129,9 @@ int main(void)
     TA1CCR0 = 0xFFFF;
 
     // Configure Timer for Interrupt sending encoder count
-    TB1CTL |= TBSSEL_2 + MC_1;
+    TB1CTL |= TBSSEL_2 + MC_1 + TBIE;
     //TB1CCTL0 = CCIE;
-    TB1CCR0 = 0x9C4; // Interrupt Every 5ms 0x9C4; // Interrupt every 1ms 0x1F4; // Interrupt every 10ms  0x1388; // Interrupt every 100ms 0xC350;
+    TB1CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
 
     // Setup Pins for DC Encoder Interrupt Capture
     P1SEL1 |= BIT1 + BIT2;
@@ -177,6 +178,7 @@ int main(void)
             {
             case 0: // Stop DC Motor
                 P3OUT &= ~(BIT6 + BIT7);
+                xControlFlag = 0;
                 TB2CCR1 = 0;
                 break;
             case 1: // CW DC Motor
@@ -222,55 +224,9 @@ int main(void)
                 prevTA0 = 0;
                 prevTA1 = 0;
                 break;
-            case 9: // Measure Rise Time of 25% PWM CW
-                speedBufferIndex = 0;
-                prevEncoderCount = 0;
-                TA0R = 0; //0xA000;
-                TA1R = 0;
-//                TB1CCR0 = 0x5DC;
-                P3OUT |= BIT7;
-                P3OUT &= ~BIT6;
-                TB2CCR1 = 0x3FFF;
-                stepTesting = 1;
-                TB1CTL |= TBIE;
-                break;
-
-            case 10: // Measure Rise Time of 50% PWM CW
-                speedBufferIndex = 0;
-                prevEncoderCount = 0;
-                TA0R = 0; //0xA000;
-                TA1R = 0;
-//                TB1CCR0 = 0x5DC;
-                P3OUT |= BIT7;
-                P3OUT &= ~BIT6;
-                TB2CCR1 = 0x7FFF;
-                stepTesting = 1;
-                TB1CTL |= TBIE;
-                break;
-            case 11: // Measure Rise Time of 75% PWM CW
-                speedBufferIndex = 0;
-                prevEncoderCount = 0;
-                TA0R = 0; //0xA000;
-                TA1R = 0;
-//                TB1CCR0 = 0x5DC;
-                P3OUT |= BIT7;
-                P3OUT &= ~BIT6;
-                TB2CCR1 = 0xBFFD;
-                stepTesting = 1;
-                TB1CTL |= TBIE;
-                break;
-            case 12: // Measure Rise Time of 100% PWM CW
-                speedBufferIndex = 0;
-                prevEncoderCount = 0;
-                TA0R = 0; //0xA000;
-                TA1R = 0;
-//                TB1CCR0 = 0x5DC;
-                P3OUT |= BIT7;
-                P3OUT &= ~BIT6;
-                TB2CCR1 = 0xFFFF;
-                stepTesting = 1;
-                TB1CTL |= TBIE;
-                break;
+            case 9: // Go To X Loc
+                xr = dataByte;
+                xControlFlag = 1;
             default: // No known command
                 break;
             }
@@ -284,7 +240,7 @@ int main(void)
             rxFlag = 0;
         }
         if (contStepperMode == 0){
-              updateStepperCoils();
+          updateStepperCoils();
         }
     }
     return 0;
@@ -316,23 +272,6 @@ __interrupt void USCI_A1_ISR(void)
             }
             else { rxIndex++; }             // Increment rxIndex
         }
-//        else
-//        {
-//            // Loop through the buffer full message and print it
-////            int i = 0;
-////            while (bufferFullMsg[i] != '\0')
-////            {
-////                UCA1TXBUF = bufferFullMsg[i];
-////                while (!(UCA1IFG & UCTXIFG));
-////                i++;
-////            }
-////
-////            // New line
-////            UCA1TXBUF = '\r';
-////            while (!(UCA1IFG & UCTXIFG));
-////            UCA1TXBUF = '\n';
-////            while (!(UCA1IFG & UCTXIFG));
-//        }
     }
 }
 #pragma vector = TIMER0_B0_VECTOR
@@ -365,35 +304,30 @@ __interrupt void TriggerTimer (void){
 __interrupt void SendEncoderCount(void){
     TA0CTL &= MC_0;
     TA1CTL &= MC_0;
-    unsigned int instructionByte;
     currentTA0 = TA0R;
     currentTA1 = TA1R;
     unsigned int encoderCount = currentTA0 - currentTA1;
-    speedBuffer[speedBufferIndex] = (encoderCount - prevEncoderCount);
-    prevEncoderCount = encoderCount;
-    if (speedBufferIndex > speedBufferSize - 1){
-        TB2CCR1 = 0;
-        P3OUT &= ~(BIT6 + BIT7);
-        instructionByte = 1;
-        int i = 0;
-        while (i < speedBufferSize){
-            transmitPackage(instructionByte, speedBuffer[i]>>8, speedBuffer[i] & 0xFF);
-            i++;
+    // Do Controls for DC Motor
+    if (xControlFlag == 1){
+        int error = xr - encoderCount*Kenc*Kd;
+        TB2CCR1 = (abs(error)*Kp);
+        if (error > 0){
+            P3OUT |= BIT7;
+            P3OUT &= ~BIT6;
         }
-        speedBufferIndex = 0;
-        stepTesting = 0;
-        TB1CTL &= ~TBIE;
+        else if (error < 0){
+            P3OUT |= BIT6;
+            P3OUT &= ~BIT7;
+        }
+        else{
+            P3OUT &= ~(BIT6 + BIT7);
+            xControlFlag = 0;
+        }
     }
-    else if (stepTesting == 1){
-        speedBufferIndex++;
-    }
-    instructionByte = 0;
-    transmitPackage(instructionByte, encoderCount>>8, encoderCount & 0xFF);
-//    prevTA1 = currentTA1;
-//    prevTA0 = currentTA0;
     TA0CTL |= MC_1;
     TA1CTL |= MC_1;
-
+    unsigned int instructionByte = 0;
+    transmitPackage(instructionByte, encoderCount>>8, encoderCount & 0xFF);
     TB1CTL &= ~TBIFG;
 }
 
