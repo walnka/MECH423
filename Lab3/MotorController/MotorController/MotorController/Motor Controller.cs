@@ -36,11 +36,77 @@ namespace MotorController
         int toothNumber = 20;
         int samplingPeriod = 100;
         int timeCount = 0;
+        double lastCount = 0;
 
+        // Flags for DC Motor and Stepper Motor Change
+        bool motorSpeedChanged = false;
 
         Byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
         int dcLSB, dcMSB, stepLSB, stepMSB;
+
+        private void timerWrite_Tick(object sender, EventArgs e)
+        {
+            if (motorSpeedChanged)
+            {
+                serialPort1.Write(output, startIndex, packetLength);
+                motorSpeedChanged = false;
+            }
+        }
+
+        private void timerRead_Tick(object sender, EventArgs e)
+        // On timer tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
+        {
+            int state = 0;
+            int MSB = 0;
+            int LSB = 0;
+            int instByte;
+            double newCount;
+            double position;
+            double speed;
+            int nextByte;
+            while (dataQueue.TryDequeue(out nextByte))
+            {
+                if (nextByte == 255)
+                {
+                    state = 1;
+                }
+                else if (state == 1)
+                {
+                    instByte = nextByte;
+                    state = 2;
+                }
+                else if (state == 2)
+                {
+                    MSB = nextByte;
+                    state = 3;
+                }
+                else if (state == 3)
+                {
+                    timeCount++;
+                    LSB = nextByte;
+                    state = 4;
+                }
+                else if (state == 4)
+                {
+                    if (nextByte % 2 != 0) { LSB = 255; }
+                    if (nextByte > 1) { MSB = 255; }
+
+                    newCount = 4 * (MSB << 8) | (LSB);// - 0xA000);
+                    position = (newCount * toothPitch * toothNumber / (motorCPR * gearRatio));
+                    speed = (1000* 60 * (newCount - lastCount) / (samplingPeriod * motorCPR * gearRatio));
+
+                    textBoxDCPosition.Text = position.ToString();
+                    textBoxDCSpeed.Text = speed.ToString();
+
+                    chartPosSpeed.Series["Position"].Points.AddXY(timeCount * samplingPeriod, position);
+                    chartPosSpeed.Series["Speed"].Points.AddXY(timeCount * samplingPeriod, speed);
+
+                    lastCount = newCount;
+                    state = 0;
+                }
+            }
+        }
 
         public Form1()
         {
@@ -78,7 +144,8 @@ namespace MotorController
                 buttonConnect.Text = "Disconnect";
                 serialPort1.BaudRate = Convert.ToInt16(textBoxBaud.Text);
                 serialPort1.Open();
-                timer1.Enabled = true;
+                timerRead.Enabled = true;
+                timerWrite.Enabled = true;
             }
         }
 
@@ -135,42 +202,6 @@ namespace MotorController
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        // On timer tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
-        {
-            int byteFlag = 0;       // flag for detecting position (= 0) or speed (= 1)
-            int MSB = 0;
-            double newCount;
-            double lastCount = 0;
-            double position;
-            double speed;
-            int nextByte;
-            while (dataQueue.TryDequeue(out nextByte))
-            {
-                if (byteFlag == 0)
-                {
-                    MSB = nextByte;
-                    byteFlag = 1;
-                }
-                else
-                {
-                    timeCount++;
-                    newCount = (MSB << 8) | (nextByte & 0xFF);
-                    position = (newCount / (motorCPR * gearRatio * toothNumber * toothPitch));
-                    speed = (60 * (newCount - lastCount) / (samplingPeriod * motorCPR * gearRatio));
-
-                    textBoxDCPosition.Text = position.ToString();
-                    textBoxDCSpeed.Text = speed.ToString();
-
-                    chartPosSpeed.Series["Position"].Points.AddXY(timeCount * samplingPeriod, position);
-                    //chartPosSpeed.Series["Speed"].Points.AddXY(timeCount * samplingPeriod, speed);
-                    
-                    lastCount = newCount;
-                    byteFlag = 0;
-                }
-            }
-        }
-
         private void trackBarDCSpeed_ValueChanged(object sender, EventArgs e)
         {
             // Check direction
@@ -198,10 +229,12 @@ namespace MotorController
             if (dcLSB == 255) { output[escapeIndex] = 1; }
             if (dcMSB == 255) { output[escapeIndex] += 2; }
 
-            // Assign PWM bytes in buffer and transmit to serial port
+            // Assign PWM bytes in buffer
             output[MSBIndex] = Convert.ToByte(dcMSB);
             output[LSBIndex] = Convert.ToByte(dcLSB);
-            serialPort1.Write(output, startIndex, packetLength);
+
+            // Flag motor speed changed
+            motorSpeedChanged = true;
         }
 
         private void trackBarStepperSpeed_ValueChanged(object sender, EventArgs e)
@@ -231,10 +264,12 @@ namespace MotorController
             if (stepLSB == 255) { output[escapeIndex] = 1; }
             if (stepMSB == 255) { output[escapeIndex] += 2; }
 
-            // Assign PWM bytes in buffer and transmit to serial port
+            // Assign PWM bytes in buffer
             output[MSBIndex] = Convert.ToByte(stepMSB);
             output[LSBIndex] = Convert.ToByte(stepLSB);
-            serialPort1.Write(output, startIndex, packetLength);
+
+            // Flag motor speed changed
+            motorSpeedChanged = true;
         }
     }
 }
