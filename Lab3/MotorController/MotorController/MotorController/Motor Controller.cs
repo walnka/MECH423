@@ -31,14 +31,14 @@ namespace MotorController
         // Motor and gantry parameters
         int motorCPR = 48;
         double gearRatio = 20.4;
-        int yAxisMaxLength = 188;
+        double yAxisMaxLength = 123.2;
         int toothPitch = 2;
         int toothNumber = 20;
         int samplingPeriod = 100;
         int timeCount = 0;
         double lastCount = 0;
 
-        // Flags for DC Motor and Stepper Motor Change
+        // Flag for DC Motor and Stepper Motor Change
         bool motorSpeedChanged = false;
 
         Byte[] output = new byte[packetLength];
@@ -92,9 +92,9 @@ namespace MotorController
                     if (nextByte % 2 != 0) { LSB = 255; }
                     if (nextByte > 1) { MSB = 255; }
 
-                    newCount = 4 * (MSB << 8) | (LSB);// - 0xA000);
-                    position = (newCount * toothPitch * toothNumber / (motorCPR * gearRatio));
-                    speed = (1000* 60 * (newCount - lastCount) / (samplingPeriod * motorCPR * gearRatio));
+                    newCount = 4 * ((MSB << 8) | LSB);// - 0xA000);
+                    position = (double)(newCount * toothPitch * toothNumber) / (double)(motorCPR * gearRatio);
+                    speed = 1000 * 60 * (double)(newCount - lastCount) / (double)(samplingPeriod * motorCPR * gearRatio);
 
                     textBoxDCPosition.Text = position.ToString();
                     textBoxDCSpeed.Text = speed.ToString();
@@ -124,11 +124,18 @@ namespace MotorController
 
         private void getOutputPacketArray()
         {
+            
             output[startIndex] = Convert.ToByte(textBoxStart.Text);
             output[commandIndex] = Convert.ToByte(textBoxCommand.Text);
             output[MSBIndex] = Convert.ToByte(textBoxPWM1.Text);
             output[LSBIndex] = Convert.ToByte(textBoxPWM2.Text);
             output[escapeIndex] = Convert.ToByte(textBoxEscape.Text);
+            //if (output[commandIndex] > 8)
+            //{
+            //    double newLength;
+            //    newLength = (output[MSBIndex] << 8 | output[LSBIndex]) * 0xFFFF / yAxisMaxLength;
+            //    output[MSBIndex] = (newLength) >> 8;
+            //}
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
