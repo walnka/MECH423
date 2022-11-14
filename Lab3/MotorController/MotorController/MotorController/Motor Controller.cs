@@ -74,6 +74,8 @@ namespace MotorController
                 else if (state == 1)
                 {
                     instByte = nextByte;
+                    if (instByte == 0) { samplingPeriod = 100; }
+                    else if (instByte == 1) { samplingPeriod = 5; }
                     state = 2;
                 }
                 else if (state == 2)
@@ -92,7 +94,7 @@ namespace MotorController
                     if (nextByte % 2 != 0) { LSB = 255; }
                     if (nextByte > 1) { MSB = 255; }
 
-                    newCount = 4 * ((MSB << 8) | LSB);// - 0xA000);
+                    newCount = (4 * ((MSB << 8) | LSB));// - 0xA000;
                     position = (double)(newCount * toothPitch * toothNumber) / (double)(motorCPR * gearRatio);
                     speed = 1000 * 60 * (double)(newCount - lastCount) / (double)(samplingPeriod * motorCPR * gearRatio);
 
