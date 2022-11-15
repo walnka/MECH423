@@ -6,16 +6,18 @@
 #define maxEncoderJump 300
 const double locErrorTolerance = 0.1;
 const int offsetZero = 0;
+const double x_rise_time = 1;
 
 // Control Constants
 const double Kd = 0xFFFF/123;
+const double Kdy = 0xFFFF/120;
 const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
-const double Kp = 1/0.02375*0.5;
-unsigned volatile int xr = 0;
-unsigned volatile int xControlFlag = 0;
+const double Kp = 1/0.02375*0.2;
 
+
+// UART Variables
 unsigned volatile int circBuffer[bufferSize];                   // For storing received data packets
 unsigned volatile int head = 0;                                 // circBuffer head
 unsigned volatile int tail = 0;                                 // circBuffer tail
@@ -25,6 +27,8 @@ unsigned volatile char* bufferEmptyMsg = "Buffer is empty";     // Message to pr
 unsigned volatile int rxByte = 0;                               // Temporary variable for storing each received byte
 volatile int rxFlag = 0;                                            // Received data flag, triggered when a packet is received
 volatile int rxIndex = 0;                                           // Counts bytes in data packet
+
+// Stepper Control Variables
 unsigned int halfStepLookupTable[numPhases][4] =
 {
  // Full Step
@@ -45,22 +49,32 @@ unsigned int halfStepLookupTable[numPhases][4] =
 unsigned volatile int stepperState = 0;
 unsigned volatile int stepperStateChange = 1;
 volatile int contStepperMode = 0;
+
+// Variables for X Control
 unsigned int currentTA0, currentTA1, prevTA0, prevTA1;
+unsigned volatile int xr = 0;
+unsigned volatile int xControlFlag = 0;
+
+// Variables for Y Control
+const double mmPerHalfStep = 2*20/400;
+unsigned volatile int yr = 0;
+unsigned volatile int yControlFlag = 0;
+unsigned int yLoc = 0;
 
 void updateStepperCoils(){
-    if (halfStepLookupTable[stepperState][0] == 1)
+    if (halfStepLookupTable[yLoc%numPhases][0] == 1)
         P1OUT |= BIT4;
     else
         P1OUT &= ~BIT4;
-    if (halfStepLookupTable[stepperState][1] == 1)
+    if (halfStepLookupTable[yLoc%numPhases][1] == 1)
         P1OUT |= BIT5;
     else
         P1OUT &= ~BIT5;
-    if (halfStepLookupTable[stepperState][2] == 1)
+    if (halfStepLookupTable[yLoc%numPhases][2] == 1)
         P3OUT |= BIT4;
     else
         P3OUT &= ~BIT4;
-    if (halfStepLookupTable[stepperState][3] == 1)
+    if (halfStepLookupTable[yLoc%numPhases][3] == 1)
         P3OUT |= BIT5;
     else
         P3OUT &= ~BIT5;
@@ -195,17 +209,19 @@ int main(void)
                 break;
             case 3: // Single Step CW
                 contStepperMode = 0;
-                if (stepperState == numPhases -1)
-                    stepperState = 0;
-                else
-                    stepperState++;
+                yLoc++;
+//                if (stepperState == numPhases -1)
+//                    stepperState = 0;
+//                else
+//                    stepperState++;
                 break;
             case 4: // Single Step CCW
                 contStepperMode = 0;
-                if (stepperState == 0)
-                    stepperState = numPhases-1;
-                else
-                    stepperState--;
+//                if (stepperState == 0)
+//                    stepperState = numPhases-1;
+//                else
+//                    stepperState--;
+                yLoc--;
                 break;
             case 5: // Continuous Step CW
                 contStepperMode = 1;
@@ -230,6 +246,25 @@ int main(void)
                 xr = dataByte;
                 TB1CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
                 xControlFlag = 1;
+                break;
+            case 10: // Zero The Stepper
+                while(yLoc%8 != 1){
+                    updateStepperCoils();
+                    yLoc++;
+                }
+                yLoc = 0;
+                break;
+            case 11: // Go To Y Loc
+                yr = dataByte/Kdy/mmPerHalfStep;
+                yControlFlag = 1;
+                TB0CCR0 = 0xFFFF - 0xF337;
+                if (yLoc < yr){
+                    contStepperMode = 1;
+                }
+                else if (yLoc > yr){
+                    contStepperMode = -1;
+                }
+                break;
             default: // No known command
                 break;
             }
@@ -280,19 +315,17 @@ __interrupt void USCI_A1_ISR(void)
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void TriggerTimer (void){
     if (contStepperMode == 1){
-        if (stepperState == numPhases - 1)
-            stepperState = 0;
-        else
-            stepperState++;
+        yLoc++;
     }
     else if (contStepperMode == -1){
-        if (stepperState == 0)
-            stepperState = numPhases - 1;
-        else
-            stepperState--;
+        yLoc--;
     }
     if (contStepperMode != 0){
         updateStepperCoils();
+    }
+    if (yControlFlag == 1 && yLoc == yr){
+        yControlFlag = 0;
+        contStepperMode = 0;
     }
 
     TB0CCTL0 &= ~CCIFG;
