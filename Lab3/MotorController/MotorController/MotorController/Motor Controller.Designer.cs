@@ -67,11 +67,24 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBoxDCPosition = new System.Windows.Forms.TextBox();
-            this.textBoxDCSpeed = new System.Windows.Forms.TextBox();
+            this.textBoxDCSpeedRPM = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.chartPosSpeed = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.timerWrite = new System.Windows.Forms.Timer(this.components);
+            this.buttonClearChart = new System.Windows.Forms.Button();
+            this.textBoxDCSpeedHz = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.labelX = new System.Windows.Forms.Label();
+            this.labelY = new System.Windows.Forms.Label();
+            this.textBoxXPos = new System.Windows.Forms.TextBox();
+            this.textBoxYPos = new System.Windows.Forms.TextBox();
+            this.buttonTransmitXY = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.buttonTransmitX = new System.Windows.Forms.Button();
+            this.buttonTransmitY = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarStepperSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartPosSpeed)).BeginInit();
@@ -237,7 +250,7 @@
             this.textBoxUserConsole.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBoxUserConsole.Multiline = true;
             this.textBoxUserConsole.Name = "textBoxUserConsole";
-            this.textBoxUserConsole.Size = new System.Drawing.Size(547, 163);
+            this.textBoxUserConsole.Size = new System.Drawing.Size(547, 56);
             this.textBoxUserConsole.TabIndex = 16;
             // 
             // timerRead
@@ -249,7 +262,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Calibri", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 377);
+            this.label1.Location = new System.Drawing.Point(12, 256);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(205, 35);
             this.label1.TabIndex = 17;
@@ -258,7 +271,7 @@
             // trackBarDCSpeed
             // 
             this.trackBarDCSpeed.LargeChange = 1000;
-            this.trackBarDCSpeed.Location = new System.Drawing.Point(12, 443);
+            this.trackBarDCSpeed.Location = new System.Drawing.Point(12, 322);
             this.trackBarDCSpeed.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.trackBarDCSpeed.Maximum = 65535;
             this.trackBarDCSpeed.Minimum = -65535;
@@ -272,7 +285,7 @@
             // labelDCSpeed
             // 
             this.labelDCSpeed.AutoSize = true;
-            this.labelDCSpeed.Location = new System.Drawing.Point(12, 423);
+            this.labelDCSpeed.Location = new System.Drawing.Point(12, 302);
             this.labelDCSpeed.Name = "labelDCSpeed";
             this.labelDCSpeed.Size = new System.Drawing.Size(110, 16);
             this.labelDCSpeed.TabIndex = 19;
@@ -281,7 +294,7 @@
             // labelStepperSpeed
             // 
             this.labelStepperSpeed.AutoSize = true;
-            this.labelStepperSpeed.Location = new System.Drawing.Point(12, 502);
+            this.labelStepperSpeed.Location = new System.Drawing.Point(12, 381);
             this.labelStepperSpeed.Name = "labelStepperSpeed";
             this.labelStepperSpeed.Size = new System.Drawing.Size(139, 16);
             this.labelStepperSpeed.TabIndex = 21;
@@ -290,7 +303,7 @@
             // trackBarStepperSpeed
             // 
             this.trackBarStepperSpeed.LargeChange = 10;
-            this.trackBarStepperSpeed.Location = new System.Drawing.Point(12, 521);
+            this.trackBarStepperSpeed.Location = new System.Drawing.Point(12, 400);
             this.trackBarStepperSpeed.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.trackBarStepperSpeed.Maximum = 1000;
             this.trackBarStepperSpeed.Minimum = -1000;
@@ -326,7 +339,7 @@
             // DCSpeed
             // 
             this.DCSpeed.AutoSize = true;
-            this.DCSpeed.Location = new System.Drawing.Point(133, 423);
+            this.DCSpeed.Location = new System.Drawing.Point(133, 302);
             this.DCSpeed.Name = "DCSpeed";
             this.DCSpeed.Size = new System.Drawing.Size(0, 16);
             this.DCSpeed.TabIndex = 24;
@@ -334,7 +347,7 @@
             // StepperSpeed
             // 
             this.StepperSpeed.AutoSize = true;
-            this.StepperSpeed.Location = new System.Drawing.Point(171, 502);
+            this.StepperSpeed.Location = new System.Drawing.Point(171, 381);
             this.StepperSpeed.Name = "StepperSpeed";
             this.StepperSpeed.Size = new System.Drawing.Size(0, 16);
             this.StepperSpeed.TabIndex = 25;
@@ -364,7 +377,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 578);
+            this.label2.Location = new System.Drawing.Point(16, 457);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(117, 16);
@@ -374,7 +387,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 606);
+            this.label3.Location = new System.Drawing.Point(16, 485);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(110, 16);
@@ -383,24 +396,24 @@
             // 
             // textBoxDCPosition
             // 
-            this.textBoxDCPosition.Location = new System.Drawing.Point(151, 575);
+            this.textBoxDCPosition.Location = new System.Drawing.Point(151, 454);
             this.textBoxDCPosition.Margin = new System.Windows.Forms.Padding(4);
             this.textBoxDCPosition.Name = "textBoxDCPosition";
             this.textBoxDCPosition.Size = new System.Drawing.Size(132, 22);
             this.textBoxDCPosition.TabIndex = 30;
             // 
-            // textBoxDCSpeed
+            // textBoxDCSpeedRPM
             // 
-            this.textBoxDCSpeed.Location = new System.Drawing.Point(151, 602);
-            this.textBoxDCSpeed.Margin = new System.Windows.Forms.Padding(4);
-            this.textBoxDCSpeed.Name = "textBoxDCSpeed";
-            this.textBoxDCSpeed.Size = new System.Drawing.Size(132, 22);
-            this.textBoxDCSpeed.TabIndex = 31;
+            this.textBoxDCSpeedRPM.Location = new System.Drawing.Point(151, 481);
+            this.textBoxDCSpeedRPM.Margin = new System.Windows.Forms.Padding(4);
+            this.textBoxDCSpeedRPM.Name = "textBoxDCSpeedRPM";
+            this.textBoxDCSpeedRPM.Size = new System.Drawing.Size(132, 22);
+            this.textBoxDCSpeedRPM.TabIndex = 31;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(292, 578);
+            this.label4.Location = new System.Drawing.Point(292, 457);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(29, 16);
@@ -410,12 +423,12 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(292, 606);
+            this.label5.Location = new System.Drawing.Point(292, 485);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(30, 16);
+            this.label5.Size = new System.Drawing.Size(37, 16);
             this.label5.TabIndex = 33;
-            this.label5.Text = "rpm";
+            this.label5.Text = "RPM";
             // 
             // chartPosSpeed
             // 
@@ -452,15 +465,147 @@
             // 
             this.timerWrite.Tick += new System.EventHandler(this.timerWrite_Tick);
             // 
+            // buttonClearChart
+            // 
+            this.buttonClearChart.Location = new System.Drawing.Point(609, 30);
+            this.buttonClearChart.Name = "buttonClearChart";
+            this.buttonClearChart.Size = new System.Drawing.Size(92, 23);
+            this.buttonClearChart.TabIndex = 35;
+            this.buttonClearChart.Text = "Clear Chart";
+            this.buttonClearChart.UseVisualStyleBackColor = true;
+            this.buttonClearChart.Click += new System.EventHandler(this.buttonClearChart_Click);
+            // 
+            // textBoxDCSpeedHz
+            // 
+            this.textBoxDCSpeedHz.Location = new System.Drawing.Point(336, 481);
+            this.textBoxDCSpeedHz.Name = "textBoxDCSpeedHz";
+            this.textBoxDCSpeedHz.Size = new System.Drawing.Size(118, 22);
+            this.textBoxDCSpeedHz.TabIndex = 36;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(460, 484);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(23, 16);
+            this.label6.TabIndex = 37;
+            this.label6.Text = "Hz";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Calibri", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(12, 507);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(286, 35);
+            this.label7.TabIndex = 38;
+            this.label7.Text = "X-Y POSITION CONTROL";
+            // 
+            // labelX
+            // 
+            this.labelX.AutoSize = true;
+            this.labelX.Location = new System.Drawing.Point(16, 552);
+            this.labelX.Name = "labelX";
+            this.labelX.Size = new System.Drawing.Size(18, 16);
+            this.labelX.TabIndex = 39;
+            this.labelX.Text = "X:";
+            // 
+            // labelY
+            // 
+            this.labelY.AutoSize = true;
+            this.labelY.Location = new System.Drawing.Point(183, 552);
+            this.labelY.Name = "labelY";
+            this.labelY.Size = new System.Drawing.Size(19, 16);
+            this.labelY.TabIndex = 40;
+            this.labelY.Text = "Y:";
+            // 
+            // textBoxXPos
+            // 
+            this.textBoxXPos.Location = new System.Drawing.Point(40, 549);
+            this.textBoxXPos.Name = "textBoxXPos";
+            this.textBoxXPos.Size = new System.Drawing.Size(100, 22);
+            this.textBoxXPos.TabIndex = 41;
+            // 
+            // textBoxYPos
+            // 
+            this.textBoxYPos.Location = new System.Drawing.Point(207, 549);
+            this.textBoxYPos.Name = "textBoxYPos";
+            this.textBoxYPos.Size = new System.Drawing.Size(100, 22);
+            this.textBoxYPos.TabIndex = 42;
+            // 
+            // buttonTransmitXY
+            // 
+            this.buttonTransmitXY.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonTransmitXY.Location = new System.Drawing.Point(350, 537);
+            this.buttonTransmitXY.Name = "buttonTransmitXY";
+            this.buttonTransmitXY.Size = new System.Drawing.Size(210, 40);
+            this.buttonTransmitXY.TabIndex = 43;
+            this.buttonTransmitXY.Text = "Transmit X-Y Position";
+            this.buttonTransmitXY.UseVisualStyleBackColor = true;
+            this.buttonTransmitXY.Click += new System.EventHandler(this.buttonTransmitXY_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(147, 552);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(29, 16);
+            this.label8.TabIndex = 44;
+            this.label8.Text = "mm";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(314, 552);
+            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(29, 16);
+            this.label9.TabIndex = 45;
+            this.label9.Text = "mm";
+            // 
+            // buttonTransmitX
+            // 
+            this.buttonTransmitX.Location = new System.Drawing.Point(12, 577);
+            this.buttonTransmitX.Name = "buttonTransmitX";
+            this.buttonTransmitX.Size = new System.Drawing.Size(157, 32);
+            this.buttonTransmitX.TabIndex = 46;
+            this.buttonTransmitX.Text = "Transmit X Position";
+            this.buttonTransmitX.UseVisualStyleBackColor = true;
+            this.buttonTransmitX.Click += new System.EventHandler(this.buttonTransmitX_Click);
+            // 
+            // buttonTransmitY
+            // 
+            this.buttonTransmitY.Location = new System.Drawing.Point(186, 577);
+            this.buttonTransmitY.Name = "buttonTransmitY";
+            this.buttonTransmitY.Size = new System.Drawing.Size(157, 32);
+            this.buttonTransmitY.TabIndex = 47;
+            this.buttonTransmitY.Text = "Transmit Y Position";
+            this.buttonTransmitY.UseVisualStyleBackColor = true;
+            this.buttonTransmitY.Click += new System.EventHandler(this.buttonTransmitY_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1191, 652);
+            this.Controls.Add(this.buttonTransmitY);
+            this.Controls.Add(this.buttonTransmitX);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.buttonTransmitXY);
+            this.Controls.Add(this.textBoxYPos);
+            this.Controls.Add(this.textBoxXPos);
+            this.Controls.Add(this.labelY);
+            this.Controls.Add(this.labelX);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.textBoxDCSpeedHz);
+            this.Controls.Add(this.buttonClearChart);
             this.Controls.Add(this.chartPosSpeed);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBoxDCSpeed);
+            this.Controls.Add(this.textBoxDCSpeedRPM);
             this.Controls.Add(this.textBoxDCPosition);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -538,11 +683,24 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBoxDCPosition;
-        private System.Windows.Forms.TextBox textBoxDCSpeed;
+        private System.Windows.Forms.TextBox textBoxDCSpeedRPM;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartPosSpeed;
         private System.Windows.Forms.Timer timerWrite;
+        private System.Windows.Forms.Button buttonClearChart;
+        private System.Windows.Forms.TextBox textBoxDCSpeedHz;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label labelX;
+        private System.Windows.Forms.Label labelY;
+        private System.Windows.Forms.TextBox textBoxXPos;
+        private System.Windows.Forms.TextBox textBoxYPos;
+        private System.Windows.Forms.Button buttonTransmitXY;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button buttonTransmitX;
+        private System.Windows.Forms.Button buttonTransmitY;
     }
 }
 

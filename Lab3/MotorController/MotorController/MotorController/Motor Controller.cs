@@ -18,7 +18,8 @@ namespace MotorController
         // Packet indices
         const int startIndex = 0, commandIndex = 1, MSBIndex = 2, LSBIndex = 3, escapeIndex = 4;
         // Command Byte command values
-        const Byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7;
+        const byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7,
+            xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitX = 12, xyTransmitY = 13;
 
         // For scaling DC and stepper motor trackbars
         const int dcTickMax = 65535;
@@ -29,21 +30,76 @@ namespace MotorController
         const int stepDeadzone = 5;
 
         // Motor and gantry parameters
-        int motorCPR = 48;
-        double gearRatio = 20.4;
-        double yAxisMaxLength = 123.2;
-        int toothPitch = 2;
-        int toothNumber = 20;
+        const int motorCPR = 48;
+        const double gearRatio = 20.4;
+        const double yAxisMaxLength = 123.2;
+        const int toothPitch = 2;
+        const int toothNumber = 20;
+        const double Kd = (double)0xFFFF / yAxisMaxLength;
+
+        // Timing
         int samplingPeriod = 100;
         int timeCount = 0;
+        int prevTimeCount = 0;
         double lastCount = 0;
 
         // Flag for DC Motor and Stepper Motor Change
         bool motorSpeedChanged = false;
 
-        Byte[] output = new byte[packetLength];
+        byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
         int dcLSB, dcMSB, stepLSB, stepMSB;
+
+        private void buttonTransmitXY_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonTransmitY_Click(object sender, EventArgs e)
+        {
+            //double newLength = Convert.ToDouble(textBoxYPos.Text);
+            //stepMSB = (byte)((byte)(Kd * newLength) >> 8);
+            //stepLSB = (byte)((byte)(Kd * newLength) & 0xFF);
+
+            //output[commandIndex] = yTransmit;
+
+            //// Check if either byte is 255 and assign escape byte accordingly
+            //output[escapeIndex] = 0;
+            //if (stepLSB == 255) { output[escapeIndex] = 1; stepLSB = 0; }
+            //if (stepMSB == 255) { output[escapeIndex] += 2; stepMSB = 0; }
+
+            //// Assign PWM bytes in buffer
+            //output[MSBIndex] = stepMSB;
+            //output[LSBIndex] = stepLSB;
+
+            //serialPort1.Write(output, startIndex, packetLength);
+        }
+
+        private void buttonTransmitX_Click(object sender, EventArgs e)
+        {
+            double newLength = Kd * Convert.ToDouble(textBoxXPos.Text);
+            dcMSB = (Int32)newLength >> 8;
+            dcLSB = (Int32)newLength & 0xFF;
+
+            output[commandIndex] = xTransmit;
+
+            // Check if either byte is 255 and assign escape byte accordingly
+            output[escapeIndex] = 0;
+            if (dcLSB == 255) { output[escapeIndex] = 1; dcLSB = 0; }
+            if (dcMSB == 255) { output[escapeIndex] += 2; dcMSB = 0; }
+
+            // Assign PWM bytes in buffer
+            output[MSBIndex] = (byte)dcMSB;
+            output[LSBIndex] = (byte)dcLSB;
+
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+
+        private void buttonClearChart_Click(object sender, EventArgs e)
+        {
+            chartPosSpeed.Series["Position"].Points.Clear();
+            chartPosSpeed.Series["Speed"].Points.Clear();
+        }
 
         private void timerWrite_Tick(object sender, EventArgs e)
         {
@@ -85,7 +141,6 @@ namespace MotorController
                 }
                 else if (state == 3)
                 {
-                    timeCount++;
                     LSB = nextByte;
                     state = 4;
                 }
@@ -96,13 +151,18 @@ namespace MotorController
 
                     newCount = (4 * ((MSB << 8) | LSB));// - 0xA000;
                     position = (double)(newCount * toothPitch * toothNumber) / (double)(motorCPR * gearRatio);
-                    speed = 1000 * 60 * (double)(newCount - lastCount) / (double)(samplingPeriod * motorCPR * gearRatio);
+                    speed = 1000 * (double)(newCount - lastCount) / (double)(samplingPeriod * motorCPR * gearRatio); // [Hz]
 
                     textBoxDCPosition.Text = position.ToString();
-                    textBoxDCSpeed.Text = speed.ToString();
+                    textBoxDCSpeedHz.Text = speed.ToString();
+                    textBoxDCSpeedRPM.Text = (60 * speed).ToString();
 
-                    chartPosSpeed.Series["Position"].Points.AddXY(timeCount * samplingPeriod, position);
-                    chartPosSpeed.Series["Speed"].Points.AddXY(timeCount * samplingPeriod, speed);
+                    timeCount = prevTimeCount + samplingPeriod;
+
+                    chartPosSpeed.Series["Position"].Points.AddXY(timeCount, position);
+                    chartPosSpeed.Series["Speed"].Points.AddXY(timeCount, 60 * speed);
+
+                    prevTimeCount = timeCount;
 
                     lastCount = newCount;
                     state = 0;
@@ -132,12 +192,6 @@ namespace MotorController
             output[MSBIndex] = Convert.ToByte(textBoxPWM1.Text);
             output[LSBIndex] = Convert.ToByte(textBoxPWM2.Text);
             output[escapeIndex] = Convert.ToByte(textBoxEscape.Text);
-            //if (output[commandIndex] > 8)
-            //{
-            //    double newLength;
-            //    newLength = (output[MSBIndex] << 8 | output[LSBIndex]) * 0xFFFF / yAxisMaxLength;
-            //    output[MSBIndex] = (newLength) >> 8;
-            //}
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
@@ -235,8 +289,8 @@ namespace MotorController
 
             // Check if either byte is 255 and assign escape byte accordingly
             output[escapeIndex] = 0;
-            if (dcLSB == 255) { output[escapeIndex] = 1; }
-            if (dcMSB == 255) { output[escapeIndex] += 2; }
+            if (dcLSB == 255) { output[escapeIndex] = 1; dcLSB = 0; }
+            if (dcMSB == 255) { output[escapeIndex] += 2; dcMSB = 0; }
 
             // Assign PWM bytes in buffer
             output[MSBIndex] = Convert.ToByte(dcMSB);
@@ -264,8 +318,8 @@ namespace MotorController
             else
             {
                 // Take abs value and scale
-                stepLSB = (Math.Abs(trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) & 0xFF;
-                stepMSB = (Math.Abs(trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) >> 8;
+                stepLSB = Math.Abs((trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) & 0xFF;
+                stepMSB = Math.Abs((trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) >> 8;
             }
 
             // Check if either byte is 255 and assign escape byte accordingly
