@@ -97,6 +97,7 @@ namespace MotorController
 
         private void buttonClearChart_Click(object sender, EventArgs e)
         {
+            timeCount = 0;
             chartPosSpeed.Series["Position"].Points.Clear();
             chartPosSpeed.Series["Speed"].Points.Clear();
         }
