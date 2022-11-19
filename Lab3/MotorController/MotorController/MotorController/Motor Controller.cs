@@ -19,14 +19,14 @@ namespace MotorController
         const int startIndex = 0, commandIndex = 1, MSBIndex = 2, LSBIndex = 3, escapeIndex = 4;
         // Command Byte command values
         const byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7,
-            xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitX = 12, xyTransmitY = 13;
+            xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitY = 12, xyTransmitX = 13, velocity = 14;
 
         // For scaling DC and stepper motor trackbars
         const int dcTickMax = 65535;
         const int dcTick0 = 0;
         const int dcDeadzone = 500;
-        const int stepTickMax = 65345;
-        const int stepTick0 = 53760;
+        const int stepTickMax = 60585;
+        const int stepTick0 = 30000;
         const int stepDeadzone = 5;
 
         // Motor and gantry parameters
@@ -52,27 +52,65 @@ namespace MotorController
 
         private void buttonTransmitXY_Click(object sender, EventArgs e)
         {
+            double xLength = Kd * Convert.ToDouble(textBoxXPos.Text);
+            double yLength = Kd * Convert.ToDouble(textBoxYPos.Text);
 
+            dcMSB = (Int32)xLength >> 8;
+            dcLSB = (Int32)xLength & 0xFF;
+            stepMSB = (Int32)yLength >> 8;
+            stepLSB = (Int32)yLength & 0xFF;
+
+            // Assign x-y control y transmit in command byte
+            output[commandIndex] = xyTransmitY;
+
+            // Check if either byte is 255 and assign escape byte accordingly
+            output[escapeIndex] = 0;
+            if (stepLSB == 255) { output[escapeIndex] = 1; stepLSB = 0; }
+            if (stepMSB == 255) { output[escapeIndex] += 2; stepMSB = 0; }
+
+            // Assign PWM bytes in buffer
+            output[MSBIndex] = (byte)stepMSB;
+            output[LSBIndex] = (byte)stepLSB;
+
+            // Write ytransmit packet to serial port
+            serialPort1.Write(output, startIndex, packetLength);
+
+            // Assign x-y transmit x transmit in command byte
+            output[commandIndex] = xyTransmitX;
+
+            // Check if either byte is 255 and assign escape byte accordingly
+            output[escapeIndex] = 0;
+            if (dcLSB == 255) { output[escapeIndex] = 1; dcLSB = 0; }
+            if (dcMSB == 255) { output[escapeIndex] += 2; dcMSB = 0; }
+
+            // Assign PWM bytes in buffer
+            output[MSBIndex] = (byte)dcMSB;
+            output[LSBIndex] = (byte)dcLSB;
+
+            System.Threading.Thread.Sleep(100);
+
+            // Write xtransmit packet to serial port
+            serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmitY_Click(object sender, EventArgs e)
         {
-            //double newLength = Convert.ToDouble(textBoxYPos.Text);
-            //stepMSB = (byte)((byte)(Kd * newLength) >> 8);
-            //stepLSB = (byte)((byte)(Kd * newLength) & 0xFF);
+            double newLength = Kd * Convert.ToDouble(textBoxYPos.Text);
+            stepMSB = (Int32)newLength >> 8;
+            stepLSB = (Int32)newLength & 0xFF;
 
-            //output[commandIndex] = yTransmit;
+            output[commandIndex] = yTransmit;
 
-            //// Check if either byte is 255 and assign escape byte accordingly
-            //output[escapeIndex] = 0;
-            //if (stepLSB == 255) { output[escapeIndex] = 1; stepLSB = 0; }
-            //if (stepMSB == 255) { output[escapeIndex] += 2; stepMSB = 0; }
+            // Check if either byte is 255 and assign escape byte accordingly
+            output[escapeIndex] = 0;
+            if (stepLSB == 255) { output[escapeIndex] = 1; stepLSB = 0; }
+            if (stepMSB == 255) { output[escapeIndex] += 2; stepMSB = 0; }
 
-            //// Assign PWM bytes in buffer
-            //output[MSBIndex] = stepMSB;
-            //output[LSBIndex] = stepLSB;
+            // Assign PWM bytes in buffer
+            output[MSBIndex] = (byte)stepMSB;
+            output[LSBIndex] = (byte)stepLSB;
 
-            //serialPort1.Write(output, startIndex, packetLength);
+            serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmitX_Click(object sender, EventArgs e)
