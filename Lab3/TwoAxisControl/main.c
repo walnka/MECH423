@@ -7,10 +7,12 @@
 const double locErrorTolerance = 0.1;
 const int offsetZero = 0;
 const double x_rise_time = 1;
+const double fiveMSscale = 0x9C4/0xFFFF;
+const double hundredMSscale = 0xC350/0xFFFF;
 
 // Control Constants
 const double Kd = 0xFFFF/123;
-const double Kdy = 0xFFFF/120;
+const double Kdy = 0xFFFF/123*2*20/400;
 const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
@@ -60,6 +62,11 @@ const double mmPerHalfStep = 2*20/400;
 unsigned volatile int yr = 0;
 unsigned volatile int yControlFlag = 0;
 unsigned int yLoc = 0;
+
+// Variables for XY Control
+volatile int xStep = 0;
+volatile unsigned int encoderCount = 0;
+
 
 void updateStepperCoils(){
     if (halfStepLookupTable[yLoc%numPhases][0] == 1)
@@ -115,10 +122,10 @@ int main(void)
     CSCTL3 |= DIVS_4;      // Set all dividers
 
     // Configure timer B2 for DC Motor
-    TB2CTL |= TBSSEL_1 + MC_1;               // ACLK, up mode
-    TB2CCTL1 |= OUTMOD_7 + CLLD_1;                    // CCR1 reset/set
-    TB2CCR0 = 0xFFFF;                       // CCR0 reset at Max
-    TB2CCR1 = 0;                            // CCR1 PWM duty cycle
+    TB2CTL |= TBSSEL_2 + MC_1 + TBIE;               // SCLK, up mode
+    TB2CCTL1 |= OUTMOD_7;                    // CCR1 reset/set + CLLD_1
+    TB2CCR0 = 0xC350;                       // CCR0 reset at Max
+    TB2CCR1 = 0x9C40 * 0xC350/0xFFFF;                            // CCR1 PWM duty cycle
 
     // Configure timer B0 for Stepper Motor
     TB0CTL |= TBSSEL_1 + MC_1;               // ACLK, up mode
@@ -144,10 +151,12 @@ int main(void)
     TA1CTL |= TASSEL_0 + MC_1 + TACLR;
     TA1CCR0 = 0xFFFF;
 
-    // Configure Timer for Interrupt sending encoder count
-    TB1CTL |= TBSSEL_2 + MC_1 + TBIE;
-    //TB1CCTL0 = CCIE;
-    TB1CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+    // Configure Timer for Duty Cycle of Stepper Pins
+    TB1CTL |= TBSSEL_1 + MC_1 + ID_2;
+    TB1CCTL0 = CCIE;
+    TB1CCTL1 = CCIE;
+    TB1CCR0 = 0x7D0;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+    TB1CCR1 = 0x238; // Every 25% duty cycle
 
     // Setup Pins for DC Encoder Interrupt Capture
     P1SEL1 |= BIT1 + BIT2;
@@ -200,27 +209,19 @@ int main(void)
             case 1: // CW DC Motor
                 P3OUT |= BIT7;
                 P3OUT &= ~BIT6;
-                TB2CCR1 = dataByte;
+                TB2CCR1 = dataByte * 0.7629;
                 break;
             case 2: // CCW DC Motor
                 P3OUT |= BIT6;
                 P3OUT &= ~BIT7;
-                TB2CCR1 = dataByte;
+                TB2CCR1 = dataByte * 0.7629;
                 break;
             case 3: // Single Step CW
-                contStepperMode = 0;
+                contStepperMode = 2;
                 yLoc++;
-//                if (stepperState == numPhases -1)
-//                    stepperState = 0;
-//                else
-//                    stepperState++;
                 break;
             case 4: // Single Step CCW
-                contStepperMode = 0;
-//                if (stepperState == 0)
-//                    stepperState = numPhases-1;
-//                else
-//                    stepperState--;
+                contStepperMode = 2;
                 yLoc--;
                 break;
             case 5: // Continuous Step CW
@@ -244,26 +245,48 @@ int main(void)
                 break;
             case 9: // Go To X Loc
                 xr = dataByte;
-                TB1CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+                TB2CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
                 xControlFlag = 1;
                 break;
             case 10: // Zero The Stepper
                 while(yLoc%8 != 1){
-                    updateStepperCoils();
                     yLoc++;
                 }
                 yLoc = 0;
                 break;
             case 11: // Go To Y Loc
-                yr = dataByte/Kdy/mmPerHalfStep;
+                yr = dataByte/Kdy;
                 yControlFlag = 1;
-                TB0CCR0 = 0xFFFF - 0xF337;
+                TB0CCR0 = 0xFFFF - 0xBD4C;
                 if (yLoc < yr){
                     contStepperMode = 1;
                 }
                 else if (yLoc > yr){
                     contStepperMode = -1;
                 }
+                break;
+            case 12: // Send Y Loc for XY Movement
+                contStepperMode = 0;
+                xControlFlag = 0;
+                yControlFlag = 0;
+                yr = dataByte/Kdy;
+                transmitPackage(1, yr>>8, yr & 0xFF);
+                break;
+            case 13: // Send X Loc for XY Movement
+                xStep = (dataByte - encoderCount*Kd*Kenc)/(yr - yLoc);
+                transmitPackage(2, xStep>>8, xStep & 0xFF);
+                break;
+            case 14: // Send Speed for XY Movement and start
+                TB0CCR0 = 0xFFFF - dataByte;
+                TB2CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+                yControlFlag = 1;
+                if (yLoc < yr){
+                    contStepperMode = 1;
+                }
+                else if (yLoc > yr){
+                    contStepperMode = -1;
+                }
+                xControlFlag = 1;
                 break;
             default: // No known command
                 break;
@@ -276,9 +299,6 @@ int main(void)
 
             // reset the data received flag
             rxFlag = 0;
-        }
-        if (contStepperMode == 0){
-          updateStepperCoils();
         }
     }
     return 0;
@@ -320,12 +340,16 @@ __interrupt void TriggerTimer (void){
     else if (contStepperMode == -1){
         yLoc--;
     }
-    if (contStepperMode != 0){
-        updateStepperCoils();
-    }
     if (yControlFlag == 1 && yLoc == yr){
         yControlFlag = 0;
+        xControlFlag = 0;
+        P3OUT &= ~(BIT6 + BIT7);
+        TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
         contStepperMode = 0;
+    }
+
+    if (xControlFlag && yControlFlag){
+        xr = xr + xStep;
     }
 
     TB0CCTL0 &= ~CCIFG;
@@ -336,7 +360,7 @@ __interrupt void TriggerTimer (void){
 // rot/full travel = 188/2/20 = 4.7
 // gear ratio: 20.4:1 rotMotor/full travel = 20.4*4.7 = 95.88
 // 48 counts/rev * 95.88 = 4602.24
-#pragma vector = TIMER1_B1_VECTOR
+#pragma vector = TIMER2_B1_VECTOR
 __interrupt void SendEncoderCount(void){
     unsigned int instructionByte = 0;
     TA0CTL &= MC_0;
@@ -345,7 +369,7 @@ __interrupt void SendEncoderCount(void){
     currentTA1 = TA1R;
     TA0CTL |= MC_1;
     TA1CTL |= MC_1;
-    unsigned int encoderCount = currentTA0 - currentTA1;
+    encoderCount = currentTA0 - currentTA1;
     if (currentTA1 > currentTA0){
         encoderCount = 0;
     }
@@ -353,7 +377,7 @@ __interrupt void SendEncoderCount(void){
     if (xControlFlag == 1){
         instructionByte = 1;
         int error = xr - (encoderCount-offsetZero)*Kenc*Kd;
-        TB2CCR1 = (abs(error)*Kp);
+        TB2CCR1 = (abs(error)*Kp) * 0x9C4/0xFFFF;
         if (error > locErrorTolerance*Kd){
             P3OUT |= BIT7;
             P3OUT &= ~BIT6;
@@ -362,13 +386,28 @@ __interrupt void SendEncoderCount(void){
             P3OUT |= BIT6;
             P3OUT &= ~BIT7;
         }
-        else{
+        else if (yControlFlag == 0){
             P3OUT &= ~(BIT6 + BIT7);
-            TB1CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+            TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
             xControlFlag = 0;
         }
     }
     transmitPackage(instructionByte, encoderCount>>8, encoderCount & 0xFF);
-    TB1CTL &= ~TBIFG;
+    TB2CTL &= ~TBIFG;
+}
+
+#pragma vector = TIMER1_B1_VECTOR
+__interrupt void TurnOffStepperPhases(void){
+    P1OUT &= ~(BIT4 + BIT5);
+    P3OUT &= ~(BIT4 + BIT5);
+    TB1CCTL1 &= ~CCIFG;
+}
+
+#pragma vector = TIMER1_B0_VECTOR
+__interrupt void TurnOnStepperPhases(void){
+    if (contStepperMode != 0){
+        updateStepperCoils();
+    }
+    TB1CCTL0 &= ~CCIFG;
 }
 
