@@ -4,8 +4,6 @@
 #define bufferSize 150
 #define numPhases 8
 #define maxEncoderJump 300
-const double locErrorTolerance = 0.4;
-const int offsetZero = 0;
 const double x_rise_time = 1;
 const double fiveMSscale = 0x9C4/0xFFFF;
 const double hundredMSscale = 0xC350/0xFFFF;
@@ -17,7 +15,7 @@ const double Kdy = 0xFFFF/123*2*20/400;
 const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
-const double Kp = 1/0.02375*0.2;
+const double Kp = 1/0.02375*0.1;
 const double Ktim = 0xC350/0xFFFF;
 
 
@@ -58,6 +56,9 @@ volatile int contStepperMode = 0;
 unsigned int currentTA0, currentTA1, prevTA0, prevTA1;
 unsigned volatile int xr = 0;
 unsigned volatile int xControlFlag = 0;
+volatile int error = 0;
+const double errorMult = (0xFFFF/123)*((4*40)/(20.4*48));
+const double errorTimerMult = 1/0.02375*0.1 * xControlRefresh/0xFFFF;
 
 // Variables for Y Control
 const double mmPerHalfStep = 2*20/400;
@@ -68,6 +69,8 @@ unsigned int yLoc = 0;
 // Variables for XY Control
 volatile double xStep = 0;
 volatile unsigned int encoderCount = 0;
+const double locErrorTolerance = 0.4*0xFFFF/123;
+volatile unsigned int xGoal = 0;
 
 
 void updateStepperCoils(){
@@ -154,7 +157,7 @@ int main(void)
     TA1CCR0 = 0xFFFF;
 
     // Configure Timer for Duty Cycle of Stepper Pins
-    TB1CTL |= TBSSEL_1 + MC_1 + ID_2;
+    TB1CTL |= TBSSEL_1 + MC_1 + ID_1;
     TB1CCTL0 = CCIE;
     TB1CCTL1 = CCIE;
     TB1CCR0 = 0x3E8;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
@@ -238,11 +241,11 @@ int main(void)
                 contStepperMode = 0;
                 break;
             case 8: // Zero the Encoder
-                TA0R = offsetZero;
+                TA0R = 0;
                 TA1R = 0;
                 currentTA0 = 0;
                 currentTA1 = 0;
-                prevTA0 = offsetZero;
+                prevTA0 = 0;
                 prevTA1 = 0;
                 break;
             case 9: // Go To X Loc
@@ -276,11 +279,16 @@ int main(void)
                 transmitPackage(1, yr>>8, yr & 0xFF);
                 break;
             case 13: // Send X Loc for XY Movement
-                xStep = (dataByte - encoderCount*Kd*Kenc)/(yr - yLoc);
+                xGoal = dataByte;
+                int yStep = abs(yr - yLoc);
+                xStep = (dataByte - encoderCount*Kd*Kenc);
+                if (yStep != 0){
+                    xStep = xStep/yStep;
+                }
                 transmitPackage(2, (int)xStep>>8, (int)xStep & 0xFF);
                 break;
             case 14: // Send Speed for XY Movement and start
-                TB0CCR0 = 0xFFFF - dataByte;
+                TB0CCR0 = (0xFFFF - dataByte);
                 TB2CCR0 = xControlRefresh;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
                 yControlFlag = 1;
                 if (yLoc < yr){
@@ -345,9 +353,10 @@ __interrupt void TriggerTimer (void){
     }
     if (yControlFlag == 1 && yLoc == yr){
         yControlFlag = 0;
-        xControlFlag = 0;
-        P3OUT &= ~(BIT6 + BIT7);
-        TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+        xr = xGoal;
+//        xControlFlag = 0;
+//        P3OUT &= ~(BIT6 + BIT7);
+//        TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
         contStepperMode = 0;
     }
 
@@ -379,13 +388,13 @@ __interrupt void SendEncoderCount(void){
     // Do Controls for DC Motor
     if (xControlFlag == 1){
         instructionByte = 1;
-        int error = xr - (encoderCount-offsetZero)*Kenc*Kd;
-        TB2CCR1 = (abs(error)*Kp) * xControlRefresh/0xFFFF;
-        if (error > locErrorTolerance*Kd){
+        error = xr - (encoderCount*errorMult);
+        TB2CCR1 = abs(error)*errorTimerMult;
+        if (error > locErrorTolerance){
             P3OUT |= BIT7;
             P3OUT &= ~BIT6;
         }
-        else if (error < -locErrorTolerance*Kd){
+        else if (error < -locErrorTolerance){
             P3OUT |= BIT6;
             P3OUT &= ~BIT7;
         }
