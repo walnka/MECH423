@@ -4,11 +4,12 @@
 #define bufferSize 150
 #define numPhases 8
 #define maxEncoderJump 300
-const double locErrorTolerance = 0.1;
+const double locErrorTolerance = 0.4;
 const int offsetZero = 0;
 const double x_rise_time = 1;
 const double fiveMSscale = 0x9C4/0xFFFF;
 const double hundredMSscale = 0xC350/0xFFFF;
+#define xControlRefresh 0x1388
 
 // Control Constants
 const double Kd = 0xFFFF/123;
@@ -17,6 +18,7 @@ const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
 const double Kp = 1/0.02375*0.2;
+const double Ktim = 0xC350/0xFFFF;
 
 
 // UART Variables
@@ -64,7 +66,7 @@ unsigned volatile int yControlFlag = 0;
 unsigned int yLoc = 0;
 
 // Variables for XY Control
-volatile int xStep = 0;
+volatile double xStep = 0;
 volatile unsigned int encoderCount = 0;
 
 
@@ -117,20 +119,20 @@ int main(void)
 
     // Configure clocks
     CSCTL0 = 0xA500;                        // Write password to modify CS registers
-    CSCTL1 |= DCOFSEL0 + DCOFSEL1;           // DCO = 8 MHz
+    CSCTL1 = DCORSEL;           // DCO = 16 MHz
     CSCTL2 |= SELM_3 + SELS_3 + SELA_3;      // MCLK = DCO, ACLK = DCO, SMCLK = DCO
-    CSCTL3 |= DIVS_4;      // Set all dividers
+    CSCTL3 |= DIVS_5;      // Set all dividers
 
     // Configure timer B2 for DC Motor
-    TB2CTL |= TBSSEL_2 + MC_1 + TBIE;               // SCLK, up mode
+    TB2CTL |= TBSSEL_2 + MC_1 + ID_1 + TBIE;               // SCLK, up mode
     TB2CCTL1 |= OUTMOD_7;                    // CCR1 reset/set + CLLD_1
     TB2CCR0 = 0xC350;                       // CCR0 reset at Max
-    TB2CCR1 = 0x9C40 * 0xC350/0xFFFF;                            // CCR1 PWM duty cycle
+    TB2CCR1 = 0x9C40 * Ktim;                            // CCR1 PWM duty cycle
 
     // Configure timer B0 for Stepper Motor
     TB0CTL |= TBSSEL_1 + MC_1;               // ACLK, up mode
     TB0CCTL0 |= CCIE;                        // CCR1 reset/set
-    TB0CCR0 = 0x9C40;                       // CCR1 PWM Duty Cycle
+    TB0CCR0 = 0xFFFF;                       // CCR1 PWM Duty Cycle
 
     // Configure outputs for DC PWM Pin
     P2SEL0 |= BIT1;
@@ -155,8 +157,8 @@ int main(void)
     TB1CTL |= TBSSEL_1 + MC_1 + ID_2;
     TB1CCTL0 = CCIE;
     TB1CCTL1 = CCIE;
-    TB1CCR0 = 0x7D0;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
-    TB1CCR1 = 0x238; // Every 25% duty cycle
+    TB1CCR0 = 0x3E8;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+    TB1CCR1 = 0x11C; // Every 25% duty cycle
 
     // Setup Pins for DC Encoder Interrupt Capture
     P1SEL1 |= BIT1 + BIT2;
@@ -209,12 +211,12 @@ int main(void)
             case 1: // CW DC Motor
                 P3OUT |= BIT7;
                 P3OUT &= ~BIT6;
-                TB2CCR1 = dataByte * 0.7629;
+                TB2CCR1 = dataByte * Ktim;
                 break;
             case 2: // CCW DC Motor
                 P3OUT |= BIT6;
                 P3OUT &= ~BIT7;
-                TB2CCR1 = dataByte * 0.7629;
+                TB2CCR1 = dataByte * Ktim;
                 break;
             case 3: // Single Step CW
                 contStepperMode = 2;
@@ -245,10 +247,11 @@ int main(void)
                 break;
             case 9: // Go To X Loc
                 xr = dataByte;
-                TB2CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+                TB2CCR0 = xControlRefresh;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
                 xControlFlag = 1;
                 break;
             case 10: // Zero The Stepper
+                contStepperMode = 2;
                 while(yLoc%8 != 1){
                     yLoc++;
                 }
@@ -274,11 +277,11 @@ int main(void)
                 break;
             case 13: // Send X Loc for XY Movement
                 xStep = (dataByte - encoderCount*Kd*Kenc)/(yr - yLoc);
-                transmitPackage(2, xStep>>8, xStep & 0xFF);
+                transmitPackage(2, (int)xStep>>8, (int)xStep & 0xFF);
                 break;
             case 14: // Send Speed for XY Movement and start
                 TB0CCR0 = 0xFFFF - dataByte;
-                TB2CCR0 = 0x9C4;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+                TB2CCR0 = xControlRefresh;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
                 yControlFlag = 1;
                 if (yLoc < yr){
                     contStepperMode = 1;
@@ -377,7 +380,7 @@ __interrupt void SendEncoderCount(void){
     if (xControlFlag == 1){
         instructionByte = 1;
         int error = xr - (encoderCount-offsetZero)*Kenc*Kd;
-        TB2CCR1 = (abs(error)*Kp) * 0x9C4/0xFFFF;
+        TB2CCR1 = (abs(error)*Kp) * xControlRefresh/0xFFFF;
         if (error > locErrorTolerance*Kd){
             P3OUT |= BIT7;
             P3OUT &= ~BIT6;
