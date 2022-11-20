@@ -285,6 +285,9 @@ int main(void)
                 if (yStep != 0){
                     xStep = xStep/yStep;
                 }
+                else {
+                    xStep = xStep/600;
+                }
                 transmitPackage(2, (int)xStep>>8, (int)xStep & 0xFF);
                 break;
             case 14: // Send Speed for XY Movement and start
@@ -355,7 +358,7 @@ __interrupt void TriggerTimer (void){
         yControlFlag = 0;
         xr = xGoal;
 //        xControlFlag = 0;
-//        P3OUT &= ~(BIT6 + BIT7);
+        P3OUT &= ~(BIT6 + BIT7);
 //        TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
         contStepperMode = 0;
     }
