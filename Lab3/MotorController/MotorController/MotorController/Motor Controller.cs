@@ -25,9 +25,9 @@ namespace MotorController
         const int dcTickMax = 65535;
         const int dcTick0 = 0;
         const int dcDeadzone = 500;
-        const int stepTickMax = 60585;
-        const int stepTick0 = 30000;
-        const int stepDeadzone = 5;
+        const int stepTickMax = 55705; //60585;
+        const int stepTick0 = 0; //30000;
+        const int stepDeadzone = 200;
 
         // Motor and gantry parameters
         const int motorCPR = 48;
@@ -49,6 +49,39 @@ namespace MotorController
         byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
         int dcLSB, dcMSB, stepLSB, stepMSB;
+
+        public Form1()
+        {
+            InitializeComponent();
+            output[startIndex] = 255;
+            comboBoxCOMPorts.Items.Clear();
+            comboBoxCOMPorts.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
+            if (comboBoxCOMPorts.Items.Count == 0)
+                comboBoxCOMPorts.Text = "No COM ports!";
+            else
+            {
+                comboBoxCOMPorts.SelectedIndex = 0;
+            }
+        }
+
+        private void buttonZeroStepper_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = 10;
+            output[MSBIndex] = 0;
+            output[LSBIndex] = 0;
+            output[escapeIndex] = 0;
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+
+        private void buttonZeroDC_Click(object sender, EventArgs e)
+        {
+            output[commandIndex] = 8;
+            output[MSBIndex] = 0;
+            output[LSBIndex] = 0;
+            output[escapeIndex] = 0;
+            serialPort1.Write(output, startIndex, packetLength);
+        }
+
 
         private void buttonTransmitXY_Click(object sender, EventArgs e)
         {
@@ -209,20 +242,7 @@ namespace MotorController
             }
         }
 
-        public Form1()
-        {
-            InitializeComponent();
-            output[startIndex] = 255;
-            comboBoxCOMPorts.Items.Clear();
-            comboBoxCOMPorts.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
-            if (comboBoxCOMPorts.Items.Count == 0)
-                comboBoxCOMPorts.Text = "No COM ports!";
-            else
-            {
-                comboBoxCOMPorts.SelectedIndex = 0;
-            }
-        }
-
+        
         private void getOutputPacketArray()
         {
             
@@ -357,8 +377,8 @@ namespace MotorController
             else
             {
                 // Take abs value and scale
-                stepLSB = Math.Abs((trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) & 0xFF;
-                stepMSB = Math.Abs((trackBarStepperSpeed.Value) * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) >> 8;
+                stepLSB = Math.Abs(trackBarStepperSpeed.Value * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) & 0xFF;
+                stepMSB = Math.Abs(trackBarStepperSpeed.Value * (stepTickMax - stepTick0) / trackBarStepperSpeed.Maximum + stepTick0) >> 8;
             }
 
             // Check if either byte is 255 and assign escape byte accordingly

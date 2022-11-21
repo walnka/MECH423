@@ -27,8 +27,8 @@ unsigned volatile int length = 0;                               // circBuffer le
 unsigned volatile char* bufferFullMsg = "Buffer is full";       // Message to print when buffer is full
 unsigned volatile char* bufferEmptyMsg = "Buffer is empty";     // Message to print when buffer is empty
 unsigned volatile int rxByte = 0;                               // Temporary variable for storing each received byte
-volatile int rxFlag = 0;                                            // Received data flag, triggered when a packet is received
-volatile int rxIndex = 0;                                           // Counts bytes in data packet
+volatile int rxFlag = 0;                                        // Received data flag, triggered when a packet is received
+volatile int rxIndex = 0;                                       // Counts bytes in data packet
 
 // Stepper Control Variables
 unsigned int halfStepLookupTable[numPhases][4] =
@@ -121,21 +121,21 @@ int main(void)
     WDTCTL = WDTPW | WDTHOLD;   // stop watchdog timer
 
     // Configure clocks
-    CSCTL0 = 0xA500;                        // Write password to modify CS registers
-    CSCTL1 = DCORSEL;           // DCO = 16 MHz
-    CSCTL2 |= SELM_3 + SELS_3 + SELA_3;      // MCLK = DCO, ACLK = DCO, SMCLK = DCO
-    CSCTL3 |= DIVS_5;      // Set all dividers
+    CSCTL0 = 0xA500;                            // Write password to modify CS registers
+    CSCTL1 = DCORSEL;                           // DCO = 16 MHz
+    CSCTL2 |= SELM_3 + SELS_3 + SELA_3;         // MCLK = DCO, ACLK = DCO, SMCLK = DCO
+    CSCTL3 |= DIVS_5;                           // Set all dividers
 
     // Configure timer B2 for DC Motor
-    TB2CTL |= TBSSEL_2 + MC_1 + ID_1 + TBIE;               // SCLK, up mode
-    TB2CCTL1 |= OUTMOD_7;                    // CCR1 reset/set + CLLD_1
-    TB2CCR0 = 0xC350;                       // CCR0 reset at Max
-    TB2CCR1 = 0x9C40 * Ktim;                            // CCR1 PWM duty cycle
+    TB2CTL |= TBSSEL_2 + MC_1 + ID_1 + TBIE;    // SCLK, up mode
+    TB2CCTL1 |= OUTMOD_7;                       // CCR1 reset/set + CLLD_1
+    TB2CCR0 = 0xC350;                           // CCR0 reset at Max
+    TB2CCR1 = 0x9C40 * Ktim;                    // CCR1 PWM duty cycle
 
     // Configure timer B0 for Stepper Motor
-    TB0CTL |= TBSSEL_1 + MC_1;               // ACLK, up mode
-    TB0CCTL0 |= CCIE;                        // CCR1 reset/set
-    TB0CCR0 = 0xFFFF;                       // CCR1 PWM Duty Cycle
+    TB0CTL |= TBSSEL_1 + MC_1;                  // ACLK, up mode
+    TB0CCTL0 |= CCIE;                           // CCR1 reset/set
+    TB0CCR0 = 0xFFFF;                           // CCR1 PWM Duty Cycle
 
     // Configure outputs for DC PWM Pin
     P2SEL0 |= BIT1;
