@@ -168,7 +168,7 @@ int main(void)
                 break;
             }
 
-//             Remove the processed bytes from the buffer
+            // Remove the processed bytes from the buffer
             length -= 5;                        // Decrease length by 5
             if (bufferSize - tail <= 5) { tail = 0; }   // Check if tail at end of buffer and if so put it at start
             else { tail += 5; }                 // Else, increase tail by 5

@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
             this.labelBaud = new System.Windows.Forms.Label();
             this.textBoxBaud = new System.Windows.Forms.TextBox();
@@ -282,9 +282,7 @@
             this.trackBarDCSpeed.Minimum = -65535;
             this.trackBarDCSpeed.Name = "trackBarDCSpeed";
             this.trackBarDCSpeed.Size = new System.Drawing.Size(548, 56);
-            this.trackBarDCSpeed.SmallChange = 100;
             this.trackBarDCSpeed.TabIndex = 18;
-            this.trackBarDCSpeed.TickFrequency = 100;
             this.trackBarDCSpeed.ValueChanged += new System.EventHandler(this.trackBarDCSpeed_ValueChanged);
             // 
             // labelDCSpeed
@@ -435,34 +433,34 @@
             // 
             // chartPosSpeed
             // 
-            chartArea3.AxisX.Title = "Time [ms]";
-            chartArea3.AxisX2.Title = "Speed [RPM]";
-            chartArea3.AxisY.Title = "Position [mm]";
-            chartArea3.AxisY2.Title = "Speed [RPM]";
-            chartArea3.Name = "ChartArea1";
-            this.chartPosSpeed.ChartAreas.Add(chartArea3);
-            legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend3.Name = "Legend1";
-            this.chartPosSpeed.Legends.Add(legend3);
+            chartArea4.AxisX.Title = "Time [ms]";
+            chartArea4.AxisX2.Title = "Speed [RPM]";
+            chartArea4.AxisY.Title = "Position [mm]";
+            chartArea4.AxisY2.Title = "Speed [RPM]";
+            chartArea4.Name = "ChartArea1";
+            this.chartPosSpeed.ChartAreas.Add(chartArea4);
+            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend4.Name = "Legend1";
+            this.chartPosSpeed.Legends.Add(legend4);
             this.chartPosSpeed.Location = new System.Drawing.Point(583, 15);
             this.chartPosSpeed.Margin = new System.Windows.Forms.Padding(4);
             this.chartPosSpeed.Name = "chartPosSpeed";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Legend = "Legend1";
-            series5.Name = "Position";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Legend = "Legend1";
-            series6.Name = "Speed";
-            series6.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.chartPosSpeed.Series.Add(series5);
-            this.chartPosSpeed.Series.Add(series6);
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Legend = "Legend1";
+            series7.Name = "Position";
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Legend = "Legend1";
+            series8.Name = "Speed";
+            series8.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chartPosSpeed.Series.Add(series7);
+            this.chartPosSpeed.Series.Add(series8);
             this.chartPosSpeed.Size = new System.Drawing.Size(592, 623);
             this.chartPosSpeed.TabIndex = 34;
-            title3.Name = "Title1";
-            title3.Text = "Data Plotting - Position & Speed vs Time";
-            this.chartPosSpeed.Titles.Add(title3);
+            title4.Name = "Title1";
+            title4.Text = "Data Plotting - Position & Speed vs Time";
+            this.chartPosSpeed.Titles.Add(title4);
             // 
             // timerWrite
             // 

@@ -24,10 +24,10 @@ namespace MotorController
         // For scaling DC and stepper motor trackbars
         const int dcTickMax = 65535;
         const int dcTick0 = 0;
-        const int dcDeadzone = 500;
+        const int dcDeadzone = 0; //500;
         const int stepTickMax = 55705; //60585;
         const int stepTick0 = 0; //30000;
-        const int stepDeadzone = 200;
+        const int stepDeadzone = 0; //200;
 
         // Motor and gantry parameters
         const int motorCPR = 48;
