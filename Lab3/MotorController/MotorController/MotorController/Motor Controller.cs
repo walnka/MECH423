@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -52,8 +53,9 @@ namespace MotorController
 
         byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
+        StreamWriter outputFile;
         int dcLSB, dcMSB, stepLSB, stepMSB, velLSB, velMSB;
-
+                
         public Form1()
         {
             InitializeComponent();
@@ -64,8 +66,21 @@ namespace MotorController
                 comboBoxCOMPorts.Text = "No COM ports!";
             else
             {
-                comboBoxCOMPorts.SelectedIndex = 0;
+                comboBoxCOMPorts.SelectedIndex = comboBoxCOMPorts.Items.Count - 1;
             }
+        }
+        private void buttonSelectFilename_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                textBoxFileName.Text = saveFileDialog1.FileName;
+        }
+
+        private void checkBoxSave_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxSave.Checked)
+                outputFile = new StreamWriter(textBoxFileName.Text);
+            else if (!checkBoxSave.Checked)
+                outputFile.Close();
         }
 
         private void buttonZeroStepper_Click(object sender, EventArgs e)
@@ -254,6 +269,11 @@ namespace MotorController
 
                     chartPosSpeed.Series["Position"].Points.AddXY(timeCount, position);
                     chartPosSpeed.Series["Speed"].Points.AddXY(timeCount, 60 * speed);
+
+                    if (checkBoxSave.Checked == true)
+                    {
+                        outputFile.Write(timeCount.ToString() + ", " + position.ToString() + "\r\n");
+                    }
 
                     prevTimeCount = timeCount;
 
