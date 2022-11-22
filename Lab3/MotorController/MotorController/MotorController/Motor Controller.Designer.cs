@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title4 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
             this.labelBaud = new System.Windows.Forms.Label();
             this.textBoxBaud = new System.Windows.Forms.TextBox();
@@ -86,7 +86,7 @@
             this.buttonTransmitX = new System.Windows.Forms.Button();
             this.buttonTransmitY = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBoxVelocity = new System.Windows.Forms.TextBox();
             this.buttonZeroDC = new System.Windows.Forms.Button();
             this.buttonZeroStepper = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarDCSpeed)).BeginInit();
@@ -433,34 +433,34 @@
             // 
             // chartPosSpeed
             // 
-            chartArea4.AxisX.Title = "Time [ms]";
-            chartArea4.AxisX2.Title = "Speed [RPM]";
-            chartArea4.AxisY.Title = "Position [mm]";
-            chartArea4.AxisY2.Title = "Speed [RPM]";
-            chartArea4.Name = "ChartArea1";
-            this.chartPosSpeed.ChartAreas.Add(chartArea4);
-            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend4.Name = "Legend1";
-            this.chartPosSpeed.Legends.Add(legend4);
+            chartArea1.AxisX.Title = "Time [ms]";
+            chartArea1.AxisX2.Title = "Speed [RPM]";
+            chartArea1.AxisY.Title = "Position [mm]";
+            chartArea1.AxisY2.Title = "Speed [RPM]";
+            chartArea1.Name = "ChartArea1";
+            this.chartPosSpeed.ChartAreas.Add(chartArea1);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend1.Name = "Legend1";
+            this.chartPosSpeed.Legends.Add(legend1);
             this.chartPosSpeed.Location = new System.Drawing.Point(583, 15);
             this.chartPosSpeed.Margin = new System.Windows.Forms.Padding(4);
             this.chartPosSpeed.Name = "chartPosSpeed";
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series7.Legend = "Legend1";
-            series7.Name = "Position";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series8.Legend = "Legend1";
-            series8.Name = "Speed";
-            series8.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.chartPosSpeed.Series.Add(series7);
-            this.chartPosSpeed.Series.Add(series8);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "Position";
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Legend = "Legend1";
+            series2.Name = "Speed";
+            series2.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chartPosSpeed.Series.Add(series1);
+            this.chartPosSpeed.Series.Add(series2);
             this.chartPosSpeed.Size = new System.Drawing.Size(592, 623);
             this.chartPosSpeed.TabIndex = 34;
-            title4.Name = "Title1";
-            title4.Text = "Data Plotting - Position & Speed vs Time";
-            this.chartPosSpeed.Titles.Add(title4);
+            title1.Name = "Title1";
+            title1.Text = "Data Plotting - Position & Speed vs Time";
+            this.chartPosSpeed.Titles.Add(title1);
             // 
             // timerWrite
             // 
@@ -596,12 +596,12 @@
             this.label10.TabIndex = 48;
             this.label10.Text = "Velocity%:";
             // 
-            // textBox1
+            // textBoxVelocity
             // 
-            this.textBox1.Location = new System.Drawing.Point(400, 549);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 22);
-            this.textBox1.TabIndex = 49;
+            this.textBoxVelocity.Location = new System.Drawing.Point(400, 549);
+            this.textBoxVelocity.Name = "textBoxVelocity";
+            this.textBoxVelocity.Size = new System.Drawing.Size(100, 22);
+            this.textBoxVelocity.TabIndex = 49;
             // 
             // buttonZeroDC
             // 
@@ -630,7 +630,7 @@
             this.ClientSize = new System.Drawing.Size(1191, 665);
             this.Controls.Add(this.buttonZeroStepper);
             this.Controls.Add(this.buttonZeroDC);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBoxVelocity);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.buttonTransmitY);
             this.Controls.Add(this.buttonTransmitX);
@@ -745,7 +745,7 @@
         private System.Windows.Forms.Button buttonTransmitX;
         private System.Windows.Forms.Button buttonTransmitY;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBoxVelocity;
         private System.Windows.Forms.Button buttonZeroDC;
         private System.Windows.Forms.Button buttonZeroStepper;
     }
