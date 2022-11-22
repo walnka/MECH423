@@ -15,7 +15,7 @@ const double Kdy = 0xFFFF/123*2*20/400;
 const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
-const double Kp = 1/0.02375*0.1;
+const double Kp = 1/0.02375*0.11;
 const double Ktim = 0xC350/0xFFFF;
 
 
@@ -58,7 +58,7 @@ unsigned volatile int xr = 0;
 unsigned volatile int xControlFlag = 0;
 volatile int error = 0;
 const double errorMult = (0xFFFF/123)*((4*40)/(20.4*48));
-const double errorTimerMult = 1/0.02375*0.1 * xControlRefresh/0xFFFF;
+const double errorTimerMult = 1/0.02375*0.23 * xControlRefresh/0xFFFF;
 
 // Variables for Y Control
 const double mmPerHalfStep = 2*20/400;
@@ -69,7 +69,7 @@ unsigned int yLoc = 0;
 // Variables for XY Control
 volatile double xStep = 0;
 volatile unsigned int encoderCount = 0;
-const double locErrorTolerance = 0.4*0xFFFF/123;
+const double locErrorTolerance = 0.22*0xFFFF/123;
 volatile unsigned int xGoal = 0;
 
 
@@ -214,12 +214,12 @@ int main(void)
             case 1: // CW DC Motor
                 P3OUT |= BIT7;
                 P3OUT &= ~BIT6;
-                TB2CCR1 = dataByte * Ktim;
+                TB2CCR1 = dataByte;
                 break;
             case 2: // CCW DC Motor
                 P3OUT |= BIT6;
                 P3OUT &= ~BIT7;
-                TB2CCR1 = dataByte * Ktim;
+                TB2CCR1 = dataByte;
                 break;
             case 3: // Single Step CW
                 contStepperMode = 2;
@@ -275,6 +275,7 @@ int main(void)
                 contStepperMode = 0;
                 xControlFlag = 0;
                 yControlFlag = 0;
+                xStep = 0;
                 yr = dataByte/Kdy;
                 transmitPackage(1, yr>>8, yr & 0xFF);
                 break;
@@ -293,6 +294,9 @@ int main(void)
             case 14: // Send Speed for XY Movement and start
                 TB0CCR0 = (0xFFFF - dataByte);
                 TB2CCR0 = xControlRefresh;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+                if (xStep != 0){
+                    xControlFlag = 1;
+                }
                 yControlFlag = 1;
                 if (yLoc < yr){
                     contStepperMode = 1;
@@ -300,7 +304,6 @@ int main(void)
                 else if (yLoc > yr){
                     contStepperMode = -1;
                 }
-                xControlFlag = 1;
                 break;
             default: // No known command
                 break;
@@ -348,6 +351,9 @@ __interrupt void USCI_A1_ISR(void)
 }
 #pragma vector = TIMER0_B0_VECTOR
 __interrupt void TriggerTimer (void){
+    if (xControlFlag && yControlFlag){
+        xr = xr + xStep;
+    }
     if (contStepperMode == 1){
         yLoc++;
     }
@@ -358,13 +364,9 @@ __interrupt void TriggerTimer (void){
         yControlFlag = 0;
         xr = xGoal;
 //        xControlFlag = 0;
-        P3OUT &= ~(BIT6 + BIT7);
+//        P3OUT &= ~(BIT6 + BIT7);
 //        TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
         contStepperMode = 0;
-    }
-
-    if (xControlFlag && yControlFlag){
-        xr = xr + xStep;
     }
 
     TB0CCTL0 &= ~CCIFG;
