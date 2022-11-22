@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -19,7 +20,7 @@ namespace MotorController
         const int startIndex = 0, commandIndex = 1, MSBIndex = 2, LSBIndex = 3, escapeIndex = 4;
         // Command Byte command values
         const byte dcStop = 0, dcCW = 1, dcCCW = 2, stepCW = 3, stepCCW = 4, stepContCW = 5, stepContCCW = 6, stepStop = 7,
-            xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitY = 12, xyTransmitX = 13, velocity = 14;
+            xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitY = 12, xyTransmitX = 13, velPercent = 14;
 
         // For scaling DC and stepper motor trackbars
         const int dcTickMax = 65535;
@@ -37,6 +38,10 @@ namespace MotorController
         const int toothNumber = 20;
         const double Kd = (double)0xFFFF / yAxisMaxLength;
 
+        // Velocity scaling
+        double vMax = 0xC800;
+        double vMin = 0xA00;
+
         // Timing
         int samplingPeriod = 100;
         int timeCount = 0;
@@ -48,8 +53,9 @@ namespace MotorController
 
         byte[] output = new byte[packetLength];
         ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
-        int dcLSB, dcMSB, stepLSB, stepMSB;
-
+        StreamWriter outputFile;
+        int dcLSB, dcMSB, stepLSB, stepMSB, velLSB, velMSB;
+                
         public Form1()
         {
             InitializeComponent();
@@ -60,8 +66,21 @@ namespace MotorController
                 comboBoxCOMPorts.Text = "No COM ports!";
             else
             {
-                comboBoxCOMPorts.SelectedIndex = 0;
+                comboBoxCOMPorts.SelectedIndex = comboBoxCOMPorts.Items.Count - 1;
             }
+        }
+        private void buttonSelectFilename_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                textBoxFileName.Text = saveFileDialog1.FileName;
+        }
+
+        private void checkBoxSave_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxSave.Checked)
+                outputFile = new StreamWriter(textBoxFileName.Text);
+            else if (!checkBoxSave.Checked)
+                outputFile.Close();
         }
 
         private void buttonZeroStepper_Click(object sender, EventArgs e)
@@ -87,11 +106,14 @@ namespace MotorController
         {
             double xLength = Kd * Convert.ToDouble(textBoxXPos.Text);
             double yLength = Kd * Convert.ToDouble(textBoxYPos.Text);
+            double velocity = (vMax - vMin) / 100 * Convert.ToDouble(textBoxVelocity.Text) + vMin;
 
             dcMSB = (Int32)xLength >> 8;
             dcLSB = (Int32)xLength & 0xFF;
             stepMSB = (Int32)yLength >> 8;
             stepLSB = (Int32)yLength & 0xFF;
+            velMSB = (Int32)velocity >> 8;
+            velLSB = (Int32)velocity & 0xFF;
 
             // Assign x-y control y transmit in command byte
             output[commandIndex] = xyTransmitY;
@@ -120,9 +142,23 @@ namespace MotorController
             output[MSBIndex] = (byte)dcMSB;
             output[LSBIndex] = (byte)dcLSB;
 
-            System.Threading.Thread.Sleep(100);
+            // Sleep to avoid interrupting firmware
+            System.Threading.Thread.Sleep(300);
 
             // Write xtransmit packet to serial port
+            serialPort1.Write(output, startIndex, packetLength);
+
+            output[commandIndex] = velPercent;
+
+            output[escapeIndex] = 0;
+            if (velLSB == 255) { output[escapeIndex] = 1; velLSB = 0; }
+            if (velMSB == 255) { output[escapeIndex] += 2; velMSB = 0; }
+
+            output[MSBIndex] = (byte)velMSB;
+            output[LSBIndex] = (byte)velLSB;
+
+            System.Threading.Thread.Sleep(300);
+
             serialPort1.Write(output, startIndex, packetLength);
         }
 
@@ -233,6 +269,11 @@ namespace MotorController
 
                     chartPosSpeed.Series["Position"].Points.AddXY(timeCount, position);
                     chartPosSpeed.Series["Speed"].Points.AddXY(timeCount, 60 * speed);
+
+                    if (checkBoxSave.Checked == true)
+                    {
+                        outputFile.Write(timeCount.ToString() + ", " + position.ToString() + "\r\n");
+                    }
 
                     prevTimeCount = timeCount;
 
