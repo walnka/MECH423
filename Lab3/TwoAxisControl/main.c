@@ -8,6 +8,7 @@ const double x_rise_time = 1;
 const double fiveMSscale = 0x9C4/0xFFFF;
 const double hundredMSscale = 0xC350/0xFFFF;
 #define xControlRefresh 0x1388
+#define normalControlRefresh 0x1388
 
 // Control Constants
 const double Kd = 0xFFFF/123;
@@ -16,7 +17,7 @@ const double Kenc = (4*40)/(20.4*48);
 const double Kv = 0.00314;
 const double tau = 0.02375;
 const double Kp = 1/0.02375*0.11;
-const double Ktim = 0xC350/0xFFFF;
+const double Ktim = normalControlRefresh/0xFFFF;
 
 
 // UART Variables
@@ -129,7 +130,7 @@ int main(void)
     // Configure timer B2 for DC Motor
     TB2CTL |= TBSSEL_2 + MC_1 + ID_1 + TBIE;    // SCLK, up mode
     TB2CCTL1 |= OUTMOD_7;                       // CCR1 reset/set + CLLD_1
-    TB2CCR0 = 0xC350;                           // CCR0 reset at Max
+    TB2CCR0 = normalControlRefresh;                           // CCR0 reset at Max
     TB2CCR1 = 0x9C40 * Ktim;                    // CCR1 PWM duty cycle
 
     // Configure timer B0 for Stepper Motor
@@ -214,12 +215,12 @@ int main(void)
             case 1: // CW DC Motor
                 P3OUT |= BIT7;
                 P3OUT &= ~BIT6;
-                TB2CCR1 = dataByte;
+                TB2CCR1 = dataByte * 0.076; //(0xC350/0xFFFF);
                 break;
             case 2: // CCW DC Motor
                 P3OUT |= BIT6;
                 P3OUT &= ~BIT7;
-                TB2CCR1 = dataByte;
+                TB2CCR1 = dataByte * 0.076; //(0xC350/0xFFFF);
                 break;
             case 3: // Single Step CW
                 contStepperMode = 2;
@@ -405,7 +406,7 @@ __interrupt void SendEncoderCount(void){
         }
         else if (yControlFlag == 0){
             P3OUT &= ~(BIT6 + BIT7);
-            TB2CCR0 = 0xC350;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
+            TB2CCR0 = normalControlRefresh;// 5ms 0x9C4; //0xC350; // Interrupt every 100ms
             xControlFlag = 0;
         }
     }
