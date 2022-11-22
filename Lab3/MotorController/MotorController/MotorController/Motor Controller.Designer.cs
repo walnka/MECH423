@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Title title3 = new System.Windows.Forms.DataVisualization.Charting.Title();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Title title5 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.comboBoxCOMPorts = new System.Windows.Forms.ComboBox();
             this.labelBaud = new System.Windows.Forms.Label();
             this.textBoxBaud = new System.Windows.Forms.TextBox();
@@ -437,34 +437,34 @@
             // 
             // chartPosSpeed
             // 
-            chartArea3.AxisX.Title = "Time [ms]";
-            chartArea3.AxisX2.Title = "Speed [RPM]";
-            chartArea3.AxisY.Title = "Position [mm]";
-            chartArea3.AxisY2.Title = "Speed [RPM]";
-            chartArea3.Name = "ChartArea1";
-            this.chartPosSpeed.ChartAreas.Add(chartArea3);
-            legend3.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-            legend3.Name = "Legend1";
-            this.chartPosSpeed.Legends.Add(legend3);
+            chartArea5.AxisX.Title = "Time [ms]";
+            chartArea5.AxisX2.Title = "Speed [RPM]";
+            chartArea5.AxisY.Title = "Position [mm]";
+            chartArea5.AxisY2.Title = "Speed [RPM]";
+            chartArea5.Name = "ChartArea1";
+            this.chartPosSpeed.ChartAreas.Add(chartArea5);
+            legend5.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+            legend5.Name = "Legend1";
+            this.chartPosSpeed.Legends.Add(legend5);
             this.chartPosSpeed.Location = new System.Drawing.Point(583, 15);
             this.chartPosSpeed.Margin = new System.Windows.Forms.Padding(4);
             this.chartPosSpeed.Name = "chartPosSpeed";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Legend = "Legend1";
-            series5.Name = "Position";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Legend = "Legend1";
-            series6.Name = "Speed";
-            series6.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
-            this.chartPosSpeed.Series.Add(series5);
-            this.chartPosSpeed.Series.Add(series6);
+            series9.ChartArea = "ChartArea1";
+            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series9.Legend = "Legend1";
+            series9.Name = "Position";
+            series10.ChartArea = "ChartArea1";
+            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series10.Legend = "Legend1";
+            series10.Name = "Speed";
+            series10.YAxisType = System.Windows.Forms.DataVisualization.Charting.AxisType.Secondary;
+            this.chartPosSpeed.Series.Add(series9);
+            this.chartPosSpeed.Series.Add(series10);
             this.chartPosSpeed.Size = new System.Drawing.Size(592, 623);
             this.chartPosSpeed.TabIndex = 34;
-            title3.Name = "Title1";
-            title3.Text = "Data Plotting - Position & Speed vs Time";
-            this.chartPosSpeed.Titles.Add(title3);
+            title5.Name = "Title1";
+            title5.Text = "Data Plotting - Position & Speed vs Time";
+            this.chartPosSpeed.Titles.Add(title5);
             // 
             // timerWrite
             // 
@@ -630,7 +630,7 @@
             // checkBoxSave
             // 
             this.checkBoxSave.AutoSize = true;
-            this.checkBoxSave.Location = new System.Drawing.Point(796, 597);
+            this.checkBoxSave.Location = new System.Drawing.Point(826, 597);
             this.checkBoxSave.Name = "checkBoxSave";
             this.checkBoxSave.Size = new System.Drawing.Size(106, 20);
             this.checkBoxSave.TabIndex = 52;
@@ -640,19 +640,20 @@
             // 
             // textBoxFileName
             // 
-            this.textBoxFileName.Location = new System.Drawing.Point(908, 595);
+            this.textBoxFileName.Location = new System.Drawing.Point(938, 595);
             this.textBoxFileName.Name = "textBoxFileName";
             this.textBoxFileName.Size = new System.Drawing.Size(100, 22);
             this.textBoxFileName.TabIndex = 53;
             // 
             // buttonSelectFilename
             // 
-            this.buttonSelectFilename.Location = new System.Drawing.Point(1014, 595);
+            this.buttonSelectFilename.Location = new System.Drawing.Point(1044, 595);
             this.buttonSelectFilename.Name = "buttonSelectFilename";
             this.buttonSelectFilename.Size = new System.Drawing.Size(131, 23);
             this.buttonSelectFilename.TabIndex = 54;
             this.buttonSelectFilename.Text = "Select Filename";
             this.buttonSelectFilename.UseVisualStyleBackColor = true;
+            this.buttonSelectFilename.Click += new System.EventHandler(this.buttonSelectFilename_Click);
             // 
             // Form1
             // 

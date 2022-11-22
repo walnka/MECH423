@@ -23,8 +23,8 @@ namespace MotorController
             xZero = 8, xTransmit = 9, yZero = 10, yTransmit = 11, xyTransmitY = 12, xyTransmitX = 13, velPercent = 14;
 
         // For scaling DC and stepper motor trackbars
-        const int dcTickMax = 65535;
-        const int dcTick0 = 0;
+        const int dcTickMax = 65535;    // obsolete
+        const int dcTick0 = 0;          // obsolete
         const int dcDeadzone = 0; //500;
         const int stepTickMax = 55705; //60585;
         const int stepTick0 = 0; //30000;
@@ -43,11 +43,10 @@ namespace MotorController
         double vMin = 0xA00;
 
         // Timing
-        int samplingPeriod = 100;
+        int samplingPeriod = 200;
         int timeCount = 0;
         int prevTimeCount = 0;
         double lastCount = 0;
-
         // Flag for DC Motor and Stepper Motor Change
         bool motorSpeedChanged = false;
 
@@ -59,14 +58,14 @@ namespace MotorController
         public Form1()
         {
             InitializeComponent();
-            output[startIndex] = 255;
+            output[startIndex] = 255;                                                       // Intitialize start byte
             comboBoxCOMPorts.Items.Clear();
-            comboBoxCOMPorts.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());
+            comboBoxCOMPorts.Items.AddRange(System.IO.Ports.SerialPort.GetPortNames());     // Add COM ports to combo box
             if (comboBoxCOMPorts.Items.Count == 0)
                 comboBoxCOMPorts.Text = "No COM ports!";
             else
             {
-                comboBoxCOMPorts.SelectedIndex = comboBoxCOMPorts.Items.Count - 1;
+                comboBoxCOMPorts.SelectedIndex = comboBoxCOMPorts.Items.Count - 1;          // set combo box index to last port by default
             }
         }
         private void buttonSelectFilename_Click(object sender, EventArgs e)
@@ -85,7 +84,7 @@ namespace MotorController
 
         private void buttonZeroStepper_Click(object sender, EventArgs e)
         {
-            output[commandIndex] = 10;
+            output[commandIndex] = yZero;
             output[MSBIndex] = 0;
             output[LSBIndex] = 0;
             output[escapeIndex] = 0;
@@ -94,7 +93,7 @@ namespace MotorController
 
         private void buttonZeroDC_Click(object sender, EventArgs e)
         {
-            output[commandIndex] = 8;
+            output[commandIndex] = xZero;
             output[MSBIndex] = 0;
             output[LSBIndex] = 0;
             output[escapeIndex] = 0;
@@ -224,7 +223,7 @@ namespace MotorController
             int state = 0;
             int MSB = 0;
             int LSB = 0;
-            int instByte;
+            int instByte = 0;
             double newCount;
             double position;
             double speed;
@@ -238,8 +237,8 @@ namespace MotorController
                 else if (state == 1)
                 {
                     instByte = nextByte;
-                    if (instByte == 0) { samplingPeriod = 100; }
-                    else if (instByte == 1) { samplingPeriod = 5; }
+                    if (instByte == 0) { samplingPeriod = 200; }
+                    else if (instByte == 1) { samplingPeriod = 20; }
                     state = 2;
                 }
                 else if (state == 2)
@@ -264,8 +263,6 @@ namespace MotorController
                     textBoxDCPosition.Text = position.ToString();
                     textBoxDCSpeedHz.Text = speed.ToString();
                     textBoxDCSpeedRPM.Text = (60 * speed).ToString();
-
-                    timeCount = prevTimeCount + samplingPeriod;
 
                     chartPosSpeed.Series["Position"].Points.AddXY(timeCount, position);
                     chartPosSpeed.Series["Speed"].Points.AddXY(timeCount, 60 * speed);
