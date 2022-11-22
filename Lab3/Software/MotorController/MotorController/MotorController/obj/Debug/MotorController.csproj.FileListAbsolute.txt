@@ -30,3 +30,14 @@ C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\
 C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\MotorController\MotorController\MotorController\obj\Debug\MotorController.csproj.CoreCompileInputs.cache
 C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\MotorController\MotorController\MotorController\obj\Debug\MotorController.exe
 C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\MotorController\MotorController\MotorController\obj\Debug\MotorController.pdb
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\bin\Debug\MotorController.exe.config
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\bin\Debug\MotorController.exe
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\bin\Debug\MotorController.pdb
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.csproj.AssemblyReference.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.csproj.SuggestedBindingRedirects.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.Form1.resources
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.Properties.Resources.resources
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.csproj.GenerateResource.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.csproj.CoreCompileInputs.cache
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.exe
+C:\Users\liam_\Documents\University\4th Year\2022W\MECH 423\Willem\MECH423\Lab3\Software\MotorController\MotorController\MotorController\obj\Debug\MotorController.pdb

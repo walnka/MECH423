@@ -33,4 +33,7 @@ for PWM = PWMs
 end
 
 %%
-plot(
+plot(PWMs,avgSpeeds)
+xlabel('PWM duty cycle [%]')
+ylabel('DC Motor Angular Velocity [RPM]')
+title('DC Motor Angular Velocity vs PWM Duty Cycle')

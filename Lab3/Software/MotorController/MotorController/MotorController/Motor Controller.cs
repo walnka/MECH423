@@ -47,13 +47,13 @@ namespace MotorController
         int timeCount = 0;
         int prevTimeCount = 0;
         double lastCount = 0;
-        // Flag for DC Motor and Stepper Motor Change
-        bool motorSpeedChanged = false;
 
-        byte[] output = new byte[packetLength];
-        ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();
-        StreamWriter outputFile;
-        int dcLSB, dcMSB, stepLSB, stepMSB, velLSB, velMSB;
+        
+        bool motorSpeedChanged = false;                                     // Flag for DC Motor and Stepper Motor Change
+        byte[] output = new byte[packetLength];                             // Output packet array
+        ConcurrentQueue<Int32> dataQueue = new ConcurrentQueue<Int32>();    // Queue for reading bytes from MSP
+        StreamWriter outputFile;                                            // File for recording DC motor data
+        int dcLSB, dcMSB, stepLSB, stepMSB, velLSB, velMSB;                 // Misc. variables
                 
         public Form1()
         {
@@ -69,12 +69,14 @@ namespace MotorController
             }
         }
         private void buttonSelectFilename_Click(object sender, EventArgs e)
+        // For opening save file dialog
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 textBoxFileName.Text = saveFileDialog1.FileName;
         }
 
         private void checkBoxSave_CheckedChanged(object sender, EventArgs e)
+        // For checking if recording data and starting new streamwriter
         {
             if (checkBoxSave.Checked)
                 outputFile = new StreamWriter(textBoxFileName.Text);
@@ -83,6 +85,7 @@ namespace MotorController
         }
 
         private void buttonZeroStepper_Click(object sender, EventArgs e)
+        // Sends packet to zero the stepper motor position
         {
             output[commandIndex] = yZero;
             output[MSBIndex] = 0;
@@ -92,6 +95,7 @@ namespace MotorController
         }
 
         private void buttonZeroDC_Click(object sender, EventArgs e)
+        // Sends packet to zero the DC motor position
         {
             output[commandIndex] = xZero;
             output[MSBIndex] = 0;
@@ -100,13 +104,15 @@ namespace MotorController
             serialPort1.Write(output, startIndex, packetLength);
         }
 
-
         private void buttonTransmitXY_Click(object sender, EventArgs e)
+        // Sends packets to move both DC and stepper motors from position and velocity input
         {
+            // Get position and velocity values from text boxes and convert to useful values
             double xLength = Kd * Convert.ToDouble(textBoxXPos.Text);
             double yLength = Kd * Convert.ToDouble(textBoxYPos.Text);
             double velocity = (vMax - vMin) / 100 * Convert.ToDouble(textBoxVelocity.Text) + vMin;
 
+            // Split values into LSB and MSB
             dcMSB = (Int32)xLength >> 8;
             dcLSB = (Int32)xLength & 0xFF;
             stepMSB = (Int32)yLength >> 8;
@@ -147,26 +153,33 @@ namespace MotorController
             // Write xtransmit packet to serial port
             serialPort1.Write(output, startIndex, packetLength);
 
+            // Assign x-y control velocity in command byte
             output[commandIndex] = velPercent;
 
+            // Check if either byte is 255 and assign escape byte accordingly
             output[escapeIndex] = 0;
             if (velLSB == 255) { output[escapeIndex] = 1; velLSB = 0; }
             if (velMSB == 255) { output[escapeIndex] += 2; velMSB = 0; }
 
+            // Assign PWM bytes in buffer
             output[MSBIndex] = (byte)velMSB;
             output[LSBIndex] = (byte)velLSB;
 
+            // Sleep to avoid interrupting firmware
             System.Threading.Thread.Sleep(300);
 
+            // Write velocity packet to serial port
             serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmitY_Click(object sender, EventArgs e)
         {
+            // Get position value from textbox and convert to LSB and MSB
             double newLength = Kd * Convert.ToDouble(textBoxYPos.Text);
             stepMSB = (Int32)newLength >> 8;
             stepLSB = (Int32)newLength & 0xFF;
 
+            // Assign y-transmit in command byte
             output[commandIndex] = yTransmit;
 
             // Check if either byte is 255 and assign escape byte accordingly
@@ -178,15 +191,18 @@ namespace MotorController
             output[MSBIndex] = (byte)stepMSB;
             output[LSBIndex] = (byte)stepLSB;
 
+            // Write x-transmit packet to serial port
             serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmitX_Click(object sender, EventArgs e)
         {
+            // Get position value from textbox and convert to LSB and MSB
             double newLength = Kd * Convert.ToDouble(textBoxXPos.Text);
             dcMSB = (Int32)newLength >> 8;
             dcLSB = (Int32)newLength & 0xFF;
 
+            // Assign x-transmit in command byte
             output[commandIndex] = xTransmit;
 
             // Check if either byte is 255 and assign escape byte accordingly
@@ -198,10 +214,12 @@ namespace MotorController
             output[MSBIndex] = (byte)dcMSB;
             output[LSBIndex] = (byte)dcLSB;
 
+            // Write y-transmit to serial port
             serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonClearChart_Click(object sender, EventArgs e)
+        // Clears the plot on the chart
         {
             timeCount = 0;
             chartPosSpeed.Series["Position"].Points.Clear();
@@ -209,6 +227,7 @@ namespace MotorController
         }
 
         private void timerWrite_Tick(object sender, EventArgs e)
+        // On timerWrite tick, detects if DC or Stepper motor speed has changed and writes the output packet to the serial port
         {
             if (motorSpeedChanged)
             {
@@ -218,8 +237,9 @@ namespace MotorController
         }
 
         private void timerRead_Tick(object sender, EventArgs e)
-        // On timer tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
+        // On timerRead tick, dequeues dataQueue and sends dequeued bytes to the position and speed textboxes
         {
+            // Misc. variables
             int state = 0;
             int MSB = 0;
             int LSB = 0;
@@ -228,52 +248,65 @@ namespace MotorController
             double position;
             double speed;
             int nextByte;
+
+            // While TryDequeue from the dataQueue returns true 
             while (dataQueue.TryDequeue(out nextByte))
             {
+                // Check if 255 (start byte) and if so state = 1
                 if (nextByte == 255)
                 {
                     state = 1;
                 }
+                // Check if state = 1 for instruction byte
                 else if (state == 1)
                 {
                     instByte = nextByte;
-                    if (instByte == 0) { samplingPeriod = 200; }
-                    else if (instByte == 1) { samplingPeriod = 20; }
-                    state = 2;
+                    if (instByte == 0) { samplingPeriod = 200; }            // If instruction byte is zero, set sampling period to 200ms
+                    else if (instByte == 1) { samplingPeriod = 20; }        // Else if instruction byte is one, set sampling period to 20ms
+                    state = 2;                                              // Set state = 2
                 }
+                // Check if state = 2 for MSB byte
                 else if (state == 2)
                 {
-                    MSB = nextByte;
-                    state = 3;
+                    MSB = nextByte;                                         // Assign MSB
+                    state = 3;                                              // Set state = 3
                 }
+                // Check if state = 3 for LSB byte
                 else if (state == 3)
                 {
-                    LSB = nextByte;
-                    state = 4;
+                    LSB = nextByte;                                         // Assign LSB
+                    state = 4;                                              // Set state = 4
                 }
+                // Check if state = 4 for final byte (escape byte)
                 else if (state == 4)
                 {
-                    if (nextByte % 2 != 0) { LSB = 255; }
-                    if (nextByte > 1) { MSB = 255; }
+                    if (nextByte % 2 != 0) { LSB = 255; }                   // Check if escape byte is odd (1 or 3) and set LSB to 255
+                    if (nextByte > 1) { MSB = 255; }                        // Check if escape byte is even (2) set MSB to 255
 
-                    newCount = (4 * ((MSB << 8) | LSB));// - 0xA000;
-                    position = (double)(newCount * toothPitch * toothNumber) / (double)(motorCPR * gearRatio);
+                    // Combine LSB and MSB to get encoder counts and multiply by 4 for quadrature signal
+                    newCount = (4 * ((MSB << 8) | LSB));
+
+                    // Calculate position in mm and speed in Hz
+                    position = (double)(newCount * toothPitch * toothNumber) / (double)(motorCPR * gearRatio);       // [mm]
                     speed = 1000 * (double)(newCount - lastCount) / (double)(samplingPeriod * motorCPR * gearRatio); // [Hz]
 
+                    // Assign DC position and speed textboxes
                     textBoxDCPosition.Text = position.ToString();
                     textBoxDCSpeedHz.Text = speed.ToString();
                     textBoxDCSpeedRPM.Text = (60 * speed).ToString();
 
+                    // Assign chart values
                     chartPosSpeed.Series["Position"].Points.AddXY(timeCount, position);
                     chartPosSpeed.Series["Speed"].Points.AddXY(timeCount, 60 * speed);
 
+                    // Check if save file checkbox is checked and if so write the time and position to the outputFile
                     if (checkBoxSave.Checked == true)
                     {
                         outputFile.Write(timeCount.ToString() + ", " + position.ToString() + "\r\n");
                     }
 
+                    // Set previous time and encoder count and set state to 0
                     prevTimeCount = timeCount;
-
                     lastCount = newCount;
                     state = 0;
                 }
@@ -282,6 +315,7 @@ namespace MotorController
 
         
         private void getOutputPacketArray()
+        // Takes values in packet textboxes in form and assigns them to the output packet array
         {
             
             output[startIndex] = Convert.ToByte(textBoxStart.Text);
@@ -292,6 +326,7 @@ namespace MotorController
         }
 
         private void buttonConnect_Click(object sender, EventArgs e)
+        // Connects or disconnects serial port and sets baud rate from textbox. Also starts read and write timers
         {
             if (serialPort1.IsOpen == true)
             {
@@ -310,6 +345,7 @@ namespace MotorController
         }
 
         private void buttonStopDC_Click(object sender, EventArgs e)
+        // Sends stop DC motor packet to serial port
         {
             output[commandIndex] = dcStop;
             serialPort1.Write(output, startIndex, packetLength);
@@ -317,6 +353,7 @@ namespace MotorController
         }
 
         private void buttonStopStepper_Click(object sender, EventArgs e)
+        // Sends stop stepper motor packet to serial port
         {
             output[commandIndex] = stepStop;
             serialPort1.Write(output, startIndex, packetLength);
@@ -324,17 +361,20 @@ namespace MotorController
         }
 
         private void buttonStepCW_Click(object sender, EventArgs e)
+        // Sends CW step packet to serial port
         {
             output[commandIndex] = stepCW;
             serialPort1.Write(output, startIndex, packetLength);
         }
         private void buttonStepCCW_Click(object sender, EventArgs e)
+        // Sends CCW step packet to serial port
         {
             output[commandIndex] = stepCCW;
             serialPort1.Write(output, startIndex, packetLength);
         }
 
         private void buttonTransmit_Click(object sender, EventArgs e)
+        // Assigns output array from packet textboxes and writes packet to serial prot
         {
             if (serialPort1.IsOpen == true)
             {
@@ -363,6 +403,7 @@ namespace MotorController
         }
 
         private void trackBarDCSpeed_ValueChanged(object sender, EventArgs e)
+        // Assigns command byte, PWM bytes, and escape byte from DC motor track bar when the track bar value changes
         {
             // Check direction
             if (trackBarDCSpeed.Value > 0) { output[commandIndex] = dcCW; }
@@ -398,6 +439,7 @@ namespace MotorController
         }
 
         private void trackBarStepperSpeed_ValueChanged(object sender, EventArgs e)
+        // Assigns command byte, PWM bytes, and escape byte from stepper motor track bar when the track bar value changes
         {
             // Check direction
             if (trackBarStepperSpeed.Value > 0) { output[commandIndex] = stepContCW; }
