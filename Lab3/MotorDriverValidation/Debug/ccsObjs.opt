@@ -1,7 +1,0 @@
-"./Liam - DC Motor Control.obj"
-"./Liam - Lab 2 Exercise 10.obj"
-"./main.obj"
-"../lnk_msp430fr5739.cmd"
--llibmath.a
--llibc.a
--llibmpu_init_fr57xx.a
