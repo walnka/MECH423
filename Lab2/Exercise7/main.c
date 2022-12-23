@@ -1,14 +1,9 @@
 #include <msp430.h> 
 
-
-/**
- * main.c
- */
-
-unsigned volatile int state = 12;
-unsigned volatile char x = 'x';
-unsigned volatile char y = 'y';
-unsigned volatile char z = 'z';
+unsigned volatile int state = 12; // Start state at 12
+unsigned volatile char x;
+unsigned volatile char y;
+unsigned volatile char z;
 
 int main(void)
 {
@@ -19,21 +14,21 @@ int main(void)
     P2OUT |= BIT7;
 
     // Setup ADC
-    ADC10CTL0 &= ~ADC10ON;     // Turn off for editing
-    ADC10CTL0 |= ADC10SHT_2;     // Set as 10bit (1024)
+    ADC10CTL0 &= ~ADC10ON;     // Turn off ADC
+    ADC10CTL0 |= ADC10SHT_2;     // Set to 10bit (1024)
     ADC10CTL1 |= ADC10SHP;
     ADC10MCTL0 |= ADC10INCH_12;
 
-    // Setup 1MHz Clock
+    // Setup clock
     CSCTL0 = 0xA500;
     CSCTL1 = DCOFSEL0 + DCOFSEL1;                           // DCO = 8 MHz
     CSCTL2 = SELM0 + SELM1 + SELA0 + SELA1 + SELS0 + SELS1; // MCLK = DCO, ACLK = DCO, SMCLK = DCO
-    CSCTL3 = DIVS__8; //divide clock by 8 for SMCLK
+    CSCTL3 = DIVS__8; //Make SMCLK 1MHz
 
     // Setup Timer
     TA1CTL |= MC__UP + TASSEL__SMCLK + TACLR;
     TA1CCTL0 |= CCIE + OUTMOD_3;
-    TA1CCR0 = 40000;
+    TA1CCR0 = 40000; // Interrupt every 40000 ticks
 
     //Configure UART
     UCA0CTLW0 |= UCSSEL0;
@@ -52,16 +47,43 @@ int main(void)
     ADC10IE |= BIT0;
     ADC10IFG &= ~ADC10IFG0;
 
-    //Global Interrupts
     _EINT();
 
     while(1);
 }
 
-//TIMER ISR
+//ADC Reading
+#pragma vector = ADC10_VECTOR
+__interrupt void ISR_ADC10_B(void)
+{
+    ADC10CTL0 &= ~ADC10ENC;
+    switch (state)
+    {
+    case 12:
+        ADC10MCTL0 = ADC10INCH_13; //Set next conversion to 13 Y
+        state++; // Increase next state to 13
+        x = ADC10MEM0>>2; //Record 8 MSB of data
+        break;
+    case 13:
+        ADC10MCTL0 = ADC10INCH_14; //Set next conversion to 14 Z
+        state++; // Increase next state to 14
+        y = ADC10MEM0>>2; //Record 8 MSB of data
+        break;
+    case 14:
+        ADC10MCTL0 = ADC10INCH_12; //Set next conversion to 12 X
+        state = 12; // Change next state to 12
+        z = ADC10MEM0>>2; //Record 8 MSB of data
+        break;
+    }
+    ADC10CTL0 |= ADC10ENC + ADC10SC;
+    ADC10IFG &= ~ADC10IFG0;
+}
+
+//Timer
 #pragma vector = TIMER1_A0_VECTOR
 __interrupt void ISR_TA1_CCR0(void)
 {
+    // Send data packet of X Y Z accelerometer Data
     int resetByte = 255;
     while ((UCA0IFG & UCTXIFG)==0);
     UCA0TXBUF = resetByte;
@@ -73,31 +95,3 @@ __interrupt void ISR_TA1_CCR0(void)
     UCA0TXBUF = z;
     TA1CCTL0 &= ~CCIFG;
 }
-
-//ADC ISR
-#pragma vector = ADC10_VECTOR
-__interrupt void ISR_ADC10_B(void)
-{
-    ADC10CTL0 &= ~ADC10ENC;
-    switch (state)
-    {
-    case 12:
-        ADC10MCTL0 = ADC10INCH_13; //Convert from Channel 13 (Y)
-        state++;
-        x = ADC10MEM0>>2;
-        break;
-    case 13:
-        ADC10MCTL0 = ADC10INCH_14; //Convert from Channel 14 (Z)
-        state++;
-        y = ADC10MEM0>>2;
-        break;
-    case 14:
-        ADC10MCTL0 = ADC10INCH_12; //Convert from Channel 12 (X)
-        state = 12;
-        z = ADC10MEM0>>2;
-        break;
-    }
-    ADC10CTL0 |= ADC10ENC + ADC10SC;
-    ADC10IFG &= ~ADC10IFG0; //RESET FLAG
-}
-

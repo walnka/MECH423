@@ -17,7 +17,6 @@ int main(void)
 	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
 
 	//Configure Clocks
-	//Configure Clocks
     CSCTL0_H = 0xA5;
     CSCTL1 = DCOFSEL0 + DCOFSEL1;
     CSCTL2 = SELM0 + SELM1 + SELA0 + SELA1 + SELS0 + SELS1;
